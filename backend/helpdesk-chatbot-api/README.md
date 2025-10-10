@@ -20,6 +20,17 @@ python -m app.ai.rag.retriever
 
 -----------------------------------------------------------------
 
+Setar variável de ambiente com o token (por enquanto tem que fazer isso sempre que iniciar a API)
+
+$env:GROQ_API_KEY="MEU_TOKEN"
+
+Rode um echo para verificar se a chave foi setada
+
+echo $env:GROQ_API_KEY
+
+-----------------------------------------------------------------
+
+
 Para rodar a api
 
 python -m uvicorn app.main:app --reload
