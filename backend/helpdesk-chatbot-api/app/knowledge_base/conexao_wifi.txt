@@ -1,0 +1,6 @@
+Se o usuário estiver com problema de conexão Wi-Fi:
+1. Verifique se o roteador está ligado.
+2. Tente reiniciar o roteador.
+3. Confira se o Wi-Fi está habilitado no dispositivo.
+4. Esqueça e reconecte à rede, digitando novamente a senha.
+5. Caso o problema persista, teste em outro dispositivo.

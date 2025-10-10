@@ -1,0 +1,109 @@
+# =========================================
+# 🐍 PYTHON
+# =========================================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Distribuição / Pacotes
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+.wheelhouse/
+
+# Logs
+*.log
+*.out
+*.err
+
+# Cache / Compilação
+.pytest_cache/
+coverage/
+.tox/
+.nox/
+.mypy_cache/
+.dmypy.json
+.pyre/
+.pytype/
+__pypackages__/
+
+# Banco de dados locais
+*.sqlite3
+*.db
+*.sqlite
+
+# Configs de ferramentas
+*.pkl
+*.lock
+*.bak
+
+# =========================================
+# 🧪 TESTES
+# =========================================
+htmlcov/
+.coverage
+coverage.xml
+nosetests.xml
+test-results.xml
+*.cover
+*.py,cover
+
+# =========================================
+# 🧰 EDITORES E IDEs
+# =========================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace
+
+# =========================================
+# 🐳 DOCKER / CONTAINERS
+# =========================================
+docker-compose.override.yml
+.docker/
+Dockerfile.dev
+*.pid
+
+# =========================================
+# ⚙️ FASTAPI / FLASK / DJANGO / ETC
+# =========================================
+# Arquivos de debug ou locais
+instance/
+local_settings.py
+*.mo
+*.pot
+
+# =========================================
+# 📸 OUTROS
+# =========================================
+# Arquivos temporários de SO
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Arquivos temporários de editor
+*.tmp
+*.temp
+
+# =========================================
+# 📦 DEPLOY / CONFIG EXTRA
+# =========================================
+# Arquivos de ambiente
+.env.*
+.envrc
+# Configs locais
+*.local

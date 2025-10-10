@@ -1,0 +1,7 @@
+Problemas de energia ou bateria:
+
+1. Verifique se o cabo está conectado corretamente.
+2. Teste outra tomada ou carregador.
+3. No notebook, retire a bateria (se possível) e conecte direto na fonte.
+4. Verifique se o LED do carregador acende.
+5. Se o equipamento desligar sozinho, verifique superaquecimento.

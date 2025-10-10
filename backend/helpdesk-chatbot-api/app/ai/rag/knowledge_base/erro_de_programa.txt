@@ -1,0 +1,7 @@
+Quando um programa não abre ou fecha sozinho:
+
+1. Reinicie o computador.
+2. Verifique se o programa precisa de atualização.
+3. Execute como administrador.
+4. Reinstale o programa.
+5. Verifique se há conflito com antivírus ou firewall.

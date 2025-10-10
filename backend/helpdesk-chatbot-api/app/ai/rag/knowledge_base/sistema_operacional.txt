@@ -1,0 +1,7 @@
+Para resolver problemas com o sistema operacional:
+
+1. Reinicie o computador.
+2. Verifique se há atualizações pendentes do Windows ou Linux.
+3. Use o modo de segurança para identificar programas que causam erros.
+4. Faça uma varredura antivírus completa.
+5. Se o problema persistir, restaure o sistema a um ponto anterior.

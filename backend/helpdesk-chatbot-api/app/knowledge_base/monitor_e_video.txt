@@ -1,0 +1,7 @@
+Se o monitor não exibe imagem:
+
+1. Verifique se o cabo HDMI/VGA está bem conectado.
+2. Teste outro cabo ou porta.
+3. Tente ligar em outro monitor.
+4. Confirme se o computador está realmente iniciando (ouça o som do Windows).
+5. Se a tela piscar, pode ser driver de vídeo. Atualize o driver.

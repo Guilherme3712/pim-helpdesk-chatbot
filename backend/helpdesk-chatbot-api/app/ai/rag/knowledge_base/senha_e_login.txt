@@ -1,0 +1,6 @@
+Problemas com login ou senha:
+
+1. Verifique se o Caps Lock está ativo.
+2. Tente redefinir a senha pela opção “Esqueci minha senha”.
+3. Confirme se está usando o e-mail correto.
+4. Se for uma conta corporativa, entre em contato com o suporte de TI.

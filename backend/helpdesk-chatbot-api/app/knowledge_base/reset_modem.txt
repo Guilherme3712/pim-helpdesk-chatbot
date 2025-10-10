@@ -1,0 +1,9 @@
+Procedimento para resetar o modem/roteador:
+
+1. Localize o botão de “Reset” na parte traseira do equipamento.
+2. Com o modem ligado, pressione o botão por cerca de 10 a 15 segundos usando um clip ou objeto fino.
+3. Aguarde o modem reiniciar — isso apagará todas as configurações personalizadas (como nome da rede e senha).
+4. Após o reset, conecte-se ao Wi-Fi padrão (geralmente indicado na etiqueta do modem).
+5. Acesse o painel do roteador digitando o IP (como 192.168.0.1 ou 192.168.1.1) no navegador.
+6. Refazer as configurações de nome da rede e senha.
+7. Caso a conexão não volte, entre em contato com a operadora para reconfiguração remota.

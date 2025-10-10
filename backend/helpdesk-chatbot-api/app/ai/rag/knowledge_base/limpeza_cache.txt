@@ -1,0 +1,6 @@
+Para melhorar o desempenho, limpe arquivos temporários e cache:
+
+1. No Windows, use o comando "cleanmgr" ou programas como CCleaner.
+2. No navegador, limpe o histórico e cache.
+3. Desinstale programas que não usa mais.
+4. Reinicie o sistema após a limpeza.

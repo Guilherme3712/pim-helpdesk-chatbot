@@ -1,0 +1,8 @@
+Passos para resolver falhas de impressão:
+
+1. Verifique se a impressora está ligada e conectada (via USB ou Wi-Fi).
+2. Confirme se há papel e tinta suficientes.
+3. Verifique se o driver da impressora está instalado e atualizado.
+4. Reinicie tanto a impressora quanto o computador.
+5. Tente imprimir uma página de teste.
+6. Se não funcionar, reinstale o driver da impressora.

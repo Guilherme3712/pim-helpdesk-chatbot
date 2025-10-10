@@ -1,0 +1,10 @@
+Guia para reinstalar drivers de dispositivos no Windows:
+
+1. Pressione as teclas Windows + X e selecione “Gerenciador de Dispositivos”.
+2. Localize o dispositivo com problema (ícone de alerta amarelo).
+3. Clique com o botão direito e selecione “Desinstalar dispositivo”.
+4. Após a desinstalação, reinicie o computador.
+5. O Windows tentará reinstalar automaticamente o driver.
+6. Caso não funcione, baixe o driver atualizado no site do fabricante.
+7. Instale o driver manualmente e reinicie novamente.
+8. Verifique se o dispositivo voltou a funcionar corretamente.

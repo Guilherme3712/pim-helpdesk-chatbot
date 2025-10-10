@@ -1,0 +1,8 @@
+Computador lento? Tente o seguinte:
+
+1. Feche programas abertos desnecessários.
+2. Verifique o uso de CPU e memória no Gerenciador de Tarefas.
+3. Faça uma varredura antivírus.
+4. Desfragmente o disco (caso HDD).
+5. Verifique espaço livre no disco.
+6. Considere adicionar mais memória RAM.

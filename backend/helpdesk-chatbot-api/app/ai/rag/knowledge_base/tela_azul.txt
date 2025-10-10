@@ -1,0 +1,8 @@
+A tela azul do Windows indica falhas graves. Siga estas etapas:
+
+1. Anote o código de erro exibido na tela.
+2. Reinicie o computador.
+3. Verifique atualizações de drivers.
+4. Teste a memória RAM com o diagnóstico do Windows.
+5. Verifique se há superaquecimento ou poeira no gabinete.
+6. Se ocorrer com frequência, pode ser problema físico (RAM, HD, placa-mãe).
