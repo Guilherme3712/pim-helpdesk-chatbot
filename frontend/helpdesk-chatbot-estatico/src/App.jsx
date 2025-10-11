@@ -1,6 +1,7 @@
 import './App.css'
-import Home from "./pages/home";
-import Chamados from "./pages/chamados";
+import Home from "./pages/home/home";
+import Chamados from "./pages/chamados/chamados";
+import Painel from "./pages/painel/painel";
 import { Routes, Route, Link } from "react-router-dom";
 
 function App() {
@@ -16,12 +17,16 @@ function App() {
               <Link to="/chamados" className="nav-link fw-semibold ms-4">
                 Chamados
               </Link>
+              <Link to="/painel" className="nav-link fw-semibold ms-4">
+              Painel
+              </Link>
             </div>
           </nav>
 
           <Routes>
             <Route path="/home" element={<Home />} />
             <Route path="/chamados" element={<Chamados />} />
+            <Route path="/painel" element={<Painel />} />
           </Routes>
         </div>
     </>
