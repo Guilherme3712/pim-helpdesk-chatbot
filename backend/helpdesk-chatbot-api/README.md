@@ -4,6 +4,12 @@ pip install fastapi uvicorn
 
 pip install groq
 
+pip install sentence_transformers
+
+pip install numpy
+
+pip install requests
+
 -----------------------------------------------------------------
 
 Para rodar um teste de ex direto 
