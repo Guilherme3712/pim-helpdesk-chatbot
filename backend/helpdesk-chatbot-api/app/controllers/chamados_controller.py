@@ -1,0 +1,52 @@
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from app.database import get_db
+from app.services.chamados_service import listar_chamados, encerrar_chamado, listar_chamados_por_usuario
+from app.schemas.chamados_schema import ChamadoResponse
+
+router = APIRouter(prefix="/chamados", tags=["Chamados"])
+
+@router.get("/all", summary="Listar todos os chamados")
+def listar_todos_chamados(db: Session = Depends(get_db)):
+    """Endpoint para listar todos os chamados cadastrados."""
+    return listar_chamados(db)
+
+@router.get("/usuario/{id_usuario}", response_model=list[ChamadoResponse])
+def get_chamados_por_usuario(id_usuario: int, db: Session = Depends(get_db)):
+    chamados = listar_chamados_por_usuario(db, id_usuario)
+    if not chamados:
+        raise HTTPException(status_code=404, detail="Nenhum chamado encontrado para este usuário.")
+    return chamados
+
+@router.put("/{id_chamado}/fechar/usuario/{id_usuario}")
+def fechar_chamado(id_chamado: int, id_usuario: int, db: Session = Depends(get_db)):
+    resultado = encerrar_chamado(db, id_chamado, id_usuario)
+    if not resultado["sucesso"]:
+        raise HTTPException(status_code=404, detail=resultado["mensagem"])
+    return resultado
+
+# # app/controllers/chamados_controller.py
+# from fastapi import APIRouter, Depends, Query, HTTPException
+# from typing import List, Optional
+# from sqlalchemy.orm import Session
+# from app.database import get_db
+# from app.services.chamados_service import obter_todos_chamados
+# from app.models.chamados_model import ChamadoSchema
+
+# router = APIRouter(prefix="/chamados", tags=["Chamados"])
+
+# @router.get("/", response_model=List[ChamadoSchema])
+# def listar_chamados(
+#     status: Optional[str] = Query(None, description="filtro por status: aberto, em_andamento, fechado"),
+#     categoria: Optional[str] = Query(None, description="filtro por categoria"),
+#     prioridade: Optional[str] = Query(None, description="filtro por prioridade"),
+#     search: Optional[str] = Query(None, description="busca em titulo/descricao"),
+#     page: int = Query(1, ge=1),
+#     page_size: int = Query(20, ge=1, le=200),
+#     db: Session = Depends(get_db),
+# ):
+#     chamados, total = obter_todos_chamados(db, status, categoria, prioridade, search, page, page_size)
+
+#     # Cabe ao front mostrar paginação; aqui retornamos apenas a lista.
+#     # Se quiser incluir metadados (total, page), pode retornar um objeto com keys 'items' e 'meta'.
+#     return chamados

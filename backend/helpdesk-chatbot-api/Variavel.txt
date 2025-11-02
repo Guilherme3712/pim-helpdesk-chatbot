@@ -1,0 +1,3 @@
+$env:GROQ_API_KEY="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"
+
+echo $env:GROQ_API_KE

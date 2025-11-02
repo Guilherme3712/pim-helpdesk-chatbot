@@ -10,6 +10,18 @@ pip install numpy
 
 pip install requests
 
+pip install sqlalchemy
+
+pip install pymysql
+
+pip install 'pydantic[email]'
+
+pip install passlib
+
+pip install jwt
+
+pip install bcrypt
+
 -----------------------------------------------------------------
 
 Para rodar um teste de ex direto 
