@@ -37,11 +37,11 @@ const MetricCard = ({ title, children }) => (
 
 export default function Home() {
 
-  const handleRegister = () => {
-        // Exemplo: Navegar para a página de cadastro
-        // if (Link) { <Link to="/cadastro" /> }
-        alert('Redirecionando para a página de Cadastro...');
-    };
+  // const handleRegister = () => {
+  //       // Exemplo: Navegar para a página de cadastro
+  //       // if (Link) { <Link to="/cadastro" /> }
+  //       alert('Redirecionando para a página de Cadastro...');
+  //   };
 
 
   return (
@@ -77,11 +77,10 @@ export default function Home() {
                             style={{ width: '120px' }}
                         />
                         <Link 
-                          to="/cadastro" // <--- Define a rota de destino
                           className="btn btn-primary px-2 fw-bold" 
                           style={customStyles.btnPrimary}
                       >
-                          Cadastre-se
+                          Login
                       </Link>
                         
                     </form>
