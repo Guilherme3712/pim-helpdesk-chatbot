@@ -1,9 +1,8 @@
 import './App.css'
 import Home from "./pages/home/home";
-import Chamados from "./pages/chamados/chamados";
 import Painel from "./pages/painel/painel";
 import Cadastro from "./pages/cadastro/cadastro";
-import { Routes, Route, Link } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Chatbot from './pages/chatbot/chatbot';
 
 function App() {
@@ -30,7 +29,6 @@ function App() {
 
           <Routes>
             <Route path="/home" element={<Home />} />
-            <Route path="/chamados" element={<Chamados />} />
             <Route path="/painel" element={<Painel />} />
             <Route path="/chatbot" element={<Chatbot />} />
             <Route path="/cadastro" element={<Cadastro />} />

@@ -4,6 +4,7 @@ from app.database import Base, engine
 from app.controllers.chatbot_controller import router as chat_router
 from app.controllers.chamados_controller import router as chamados_router
 from app.controllers.usuario_controller import router as usuario_router
+from fastapi.middleware.cors import CORSMiddleware
 
 # Cria as tabelas automaticamente (apenas para desenvolvimento)
 # Em produção, isso deve ser feito via migrations (ex: Alembic)
@@ -13,6 +14,14 @@ app = FastAPI(
     title="Helpdesk Chatbot API",
     version="1.0",
     description="API do Chatbot técnico com RAG + Groq + Sistema de Chamados",
+)
+
+app.add_middleware(
+  CORSMiddleware,
+  allow_origins=["http://localhost:5173"],  # ou ["*"] em dev
+  allow_credentials=True,
+  allow_methods=["*"],
+  allow_headers=["*"],
 )
 
 # Rotas principais

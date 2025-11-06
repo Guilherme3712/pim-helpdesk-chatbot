@@ -1,6 +1,5 @@
 from sqlalchemy.orm import Session
 from app.models.interacoes_model import InteracaoIA, RemetenteEnum
-from app.models.chamados_model import Chamado
 
 def salvar_interacao(db: Session, id_usuario: int, id_chamado: int, remetente: RemetenteEnum, mensagem: str):
     interacao = InteracaoIA(

@@ -23,15 +23,25 @@ const customStyles = {
 };
 
 
-const MetricCard = ({ title, children }) => (
+const MetricCard = ({ title, children, route }) => (
     <div className="col-lg-4 col-md-6 mb-4">
-        <div className="card h-100 p-3" style={customStyles.card}>
-            <div className="card-body">
-                <h5 className="card-title fw-bold text-dark mb-4">{title}</h5>
-                {/* Aqui entra o conteúdo do gráfico/métrica */}
-                {children}
+        <Link to={route || '#'} className="text-decoration-none">
+            <div className="card h-100 p-3" style={{
+                ...customStyles.card,
+                transition: 'transform 0.2s, box-shadow 0.2s',
+                cursor: route ? 'pointer' : 'default',
+                ':hover': route ? {
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 6px 16px rgba(0,0,0,0.1)'
+                } : {}
+            }}>
+                <div className="card-body">
+                    <h5 className="card-title fw-bold text-dark mb-4">{title}</h5>
+                    {/* Aqui entra o conteúdo do gráfico/métrica */}
+                    {children}
+                </div>
             </div>
-        </div>
+        </Link>
     </div>
 );
 
@@ -116,7 +126,7 @@ export default function Home() {
                 <div className="row mt-4">
                     
                     {/* Card 1: Chamados Abertos */}
-                    <MetricCard title="Chamados Abertos">
+                    <MetricCard title="Chamados Abertos" route="/painel">
                         {/* Simulação de um gráfico de barras horizontal */}
                         <div className="d-flex flex-column justify-content-center align-items-start p-3" style={{ height: '100px' }}>
                             <div className="bg-primary mb-2" style={{ width: '80%', height: '8px', borderRadius: '4px' }}></div>
