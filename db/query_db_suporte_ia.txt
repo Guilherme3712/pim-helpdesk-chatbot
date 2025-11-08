@@ -1,0 +1,89 @@
+DROP DATABASE IF EXISTS db_suporte_ia;
+CREATE DATABASE db_suporte_ia CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE db_suporte_ia;
+
+-- ==========================================================
+-- TABELA DE USUÁRIOS
+-- ==========================================================
+CREATE TABLE usuarios (
+    id_usuario INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    senha VARCHAR(255) NOT NULL,
+    tipo_usuario ENUM('cliente', 'tecnico', 'admin') NOT NULL,
+    autenticacao_mfa BOOLEAN DEFAULT FALSE,
+    data_criacao DATETIME DEFAULT CURRENT_TIMESTAMP,
+    ultimo_login DATETIME,
+    INDEX (email)
+);
+
+-- ==========================================================
+-- TABELA DE CHAMADOS
+-- ==========================================================
+CREATE TABLE chamados (
+    id_chamado INT PRIMARY KEY AUTO_INCREMENT,
+    id_usuario INT NOT NULL,
+    titulo VARCHAR(150) NOT NULL,
+    descricao TEXT,
+    categoria ENUM('hardware', 'software', 'rede', 'outros') DEFAULT 'outros',
+    prioridade ENUM('baixa', 'media', 'alta') DEFAULT 'media',
+    status ENUM('aberto', 'em_andamento', 'fechado') DEFAULT 'aberto',
+    classificado_por_ia BOOLEAN DEFAULT FALSE,
+    tempo_medio_atendimento TIME,
+    data_criacao DATETIME DEFAULT CURRENT_TIMESTAMP,
+    data_atualizacao DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario) ON DELETE CASCADE,
+    INDEX (status),
+    INDEX (categoria),
+    INDEX (prioridade)
+);
+
+-- ==========================================================
+-- INTERAÇÕES DA IA (classificação, resposta, priorização)
+-- ==========================================================
+
+CREATE TABLE interacoes_ia (
+    id_interacao INT PRIMARY KEY AUTO_INCREMENT,
+    id_usuario INT NOT NULL,
+    id_chamado INT NOT NULL,
+    remetente ENUM('usuario', 'ia') NOT NULL,
+    mensagem TEXT NOT NULL,
+    data_hora DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario) ON DELETE CASCADE,
+    FOREIGN KEY (id_chamado) REFERENCES chamados(id_chamado) ON DELETE CASCADE,
+    INDEX (id_chamado),
+    INDEX (id_usuario)
+);
+
+/*
+Dados Usuarios
+*/
+
+INSERT INTO usuarios (nome, email, senha, tipo_usuario, autenticacao_mfa)
+VALUES
+('João Silva', 'joao.silva@empresa.com', 'senha_ficticio_1', 'cliente', FALSE),
+('Maria Oliveira', 'maria.oliveira@empresa.com', 'senha_ficticio_2', 'tecnico', TRUE),
+('Carlos Souza', 'carlos.souza@empresa.com', 'senha_ficticio_3', 'admin', TRUE);
+
+
+/*
+Dados Chamados
+*/
+
+INSERT INTO chamados (id_usuario, titulo, descricao, categoria, prioridade, status, classificado_por_ia)
+VALUES
+(1, 'Computador não liga', 'O computador do setor de contabilidade não está ligando após queda de energia.', 'hardware', 'alta', 'em_andamento', FALSE),
+
+(2, 'Erro no sistema de vendas', 'O sistema de vendas apresenta erro de conexão ao banco de dados.', 'software', 'media', 'em_andamento', TRUE),
+
+(3, 'Internet intermitente', 'A conexão de internet cai frequentemente no escritório principal.', 'rede', 'alta', 'em_andamento', FALSE),
+
+(1, 'Solicitação de novo monitor', 'Solicitado novo monitor para estação de trabalho da recepção.', 'hardware', 'baixa', 'fechado', TRUE),
+
+(2, 'Instalação de software de design', 'Necessário instalar o Adobe Illustrator para equipe de marketing.', 'software', 'media', 'em_andamento', FALSE),
+
+(3, 'Problema no roteador', 'O roteador do segundo andar está travando frequentemente.', 'rede', 'media', 'em_andamento', TRUE),
+
+(1, 'Atualização de antivírus', 'Verificar licença do antivírus e atualizar nas máquinas do setor financeiro.', 'software', 'baixa', 'fechado', FALSE),
+
+(2, 'Falha no servidor de arquivos', 'Os usuários não conseguem acessar o servidor de arquivos interno.', 'rede', 'alta', 'em_andamento', TRUE);
