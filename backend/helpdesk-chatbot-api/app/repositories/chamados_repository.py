@@ -1,6 +1,5 @@
 from sqlalchemy.orm import Session
 from app.models.chamados_model import Chamado
-from app.models.chamados_model import Chamado
 from sqlalchemy import and_
 
 def listar_chamados(db: Session):
@@ -51,7 +50,7 @@ def fechar_chamado_aberto(db, id_usuario):
 def fechar_chamado(db: Session, id_chamado: int, id_usuario: int):
     chamado = (
         db.query(Chamado)
-        .filter_by(id_chamado=id_chamado, id_usuario=id_usuario, status="aberto")
+        .filter_by(id_chamado=id_chamado, id_usuario=id_usuario, status="em_andamento")
         .first()
     )
     if not chamado:

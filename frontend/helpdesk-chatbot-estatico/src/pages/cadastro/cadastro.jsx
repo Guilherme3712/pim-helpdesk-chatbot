@@ -1,194 +1,261 @@
-import { Link } from "react-router-dom";
-import React, { useState } from 'react';
+// src/components/Cadastro.jsx
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
+const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:8000/api";
 
 export default function Cadastro() {
+  const navigate = useNavigate();
 
-    const [formData, setFormData] = useState({
-        fullName: '',
-        email: '',
-        accessKey: '',
-        password: '',
-        confirmPassword: ''
-    });
+  const [form, setForm] = useState({
+    nome: "",
+    email: "",
+    senha: "",
+    confirmarSenha: "",
+  });
 
-    // Função para lidar com a mudança nos inputs
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prevData => ({
-            ...prevData,
-            [name]: value
-        }));
-    };
+  const [showSenha, setShowSenha] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [msg, setMsg] = useState({ text: null, type: null }); // type: 'success' | 'error'
 
-    // Função para lidar com o envio do formulário
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // Lógica de validação e envio
-        if (formData.password !== formData.confirmPassword) {
-            alert("As senhas não coincidem!");
-            return;
-        }
-        console.log("Dados de Registro:", formData);
-        alert("Registro Efetuado! (Verifique o console para os dados)");
-        // Você pode adicionar a chamada à API aqui
-    };
+  function handleChange(e) {
+    const { name, value } = e.target;
+    setForm((s) => ({ ...s, [name]: value }));
+  }
 
-    // Estilo personalizado para simular o layout minimalista e as bordas arredondadas do card
-    const cardStyle = {
-        maxWidth: '500px',
-        borderRadius: '1.5rem', // Mais arredondado que o padrão do Bootstrap
-        boxShadow: '0 4px 20px rgba(0,0,0,.05)',
-        padding: '3rem'
-    };
+  function validar() {
+    if (!form.nome.trim()) {
+      setMsg({ text: "Preencha o nome completo.", type: "error" });
+      return false;
+    }
+    if (!form.email.trim()) {
+      setMsg({ text: "Preencha o email.", type: "error" });
+      return false;
+    }
+    if (!form.senha || form.senha.length < 6) {
+      setMsg({ text: "A senha deve ter pelo menos 6 caracteres.", type: "error" });
+      return false;
+    }
+    if (form.senha !== form.confirmarSenha) {
+      setMsg({ text: "As senhas não coincidem.", type: "error" });
+      return false;
+    }
+    return true;
+  }
 
-    const inputStyle = {
-        borderRadius: '.5rem', // Bordas arredondadas nos inputs
-        height: '3.2rem' // Altura ligeiramente maior para inputs
-    };
-    
-    // Para simular o ícone de olho no campo Confirm Password (usaremos o Bootstrap Icons)
-    // Se você não tiver o Bootstrap Icons, pode usar um SVG ou uma imagem.
-    // Presumindo que o Bootstrap Icons (bi) está disponível
-    const PasswordInputGroup = ({ name, value, onChange, placeholder, hasIcon = false }) => (
-        <div className="input-group mb-3">
-            <input
-                type={name.includes('password') ? 'password' : 'text'}
-                className="form-control"
-                style={inputStyle}
-                name={name}
-                placeholder={placeholder}
-                value={value}
-                onChange={onChange}
-                required
-            />
-            {hasIcon && (
-                <span className="input-group-text bg-white border-0" style={{ position: 'absolute', right: '0', zIndex: 10, height: '3.2rem' }}>
-                     {/* Este ícone é apenas para simular o visual. O ícone de olho do Bootstrap Icons é 'bi-eye' */}
-                    <i className="bi bi-eye-slash-fill text-muted"></i> 
-                </span>
-            )}
-        </div>
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setMsg({ text: null, type: null });
+    if (!validar()) return;
 
-)
+    setLoading(true);
+    try {
+      const payload = {
+        nome: form.nome.trim(),
+        email: form.email.trim().toLowerCase(),
+        senha: form.senha,
+      };
+
+      const res = await fetch(`${API_BASE}/usuarios/cadastro`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || `Status ${res.status}`);
+      }
+
+      // sucesso
+      setMsg({ text: "Cadastro realizado com sucesso! Você será redirecionado.", type: "success" });
+      localStorage.setItem("registeredEmail", payload.email);
+
+      setTimeout(() => {
+        navigate("/home");
+      }, 900);
+    } catch (err) {
+      console.error("Erro no cadastro:", err);
+      const message = err.message || "Erro ao cadastrar. Tente novamente.";
+      setMsg({ text: message, type: "error" });
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const cardStyle = {
+    maxWidth: "560px",
+    borderRadius: "1rem",
+    boxShadow: "0 6px 24px rgba(12, 34, 80, 0.06)",
+    padding: "2.5rem",
+    backgroundColor: "#fff",
+  };
+
+  const inputStyle = { borderRadius: ".6rem", height: "3rem" };
 
   return (
-    <div className="vh-100 d-flex flex-column" style={{ backgroundColor: '#f4f7fa' }}>
-            
-            {/* 1. Navbar Simples/Header */}
-            
+    <div className="vh-100 d-flex flex-column" style={{ backgroundColor: "#f4f7fa" }}>
+      <header className="py-3" style={{ backgroundColor: "#fff", boxShadow: "0 2px 6px rgba(0,0,0,.02)" }}>
+        <div className="container d-flex justify-content-between align-items-center">
+          <div className="d-flex align-items-center">
+            <span className="me-2" style={{ fontSize: "1.25rem", color: "#3f67f5" }}>
+              <i className="bi bi-headset"></i>
+            </span>
+            <strong>Suporte Técnico IA</strong>
+          </div>
 
-            {/* 2. Container Central com o Formulário */}
-            <main className="flex-grow-1 d-flex justify-content-center align-items-center">
-                <div className="bg-white shadow-sm" style={cardStyle}>
-                    <form onSubmit={handleSubmit}>
-                        
-                        {/* Full Name / E-mail */}
-                        <div className="mb-4">
-                            <label htmlFor="email" className="form-label text-muted fw-bold">Nome Completo</label>
-                            <input
-                                type="text"
-                                className="form-control"
-                                style={inputStyle}
-                                name="fullName"
-                                placeholder="Nome" // O layout da imagem parece ter o placeholder trocado com o label
-                                value={formData.fullName}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-
-                        {/* E-mail (O campo 'Full Name' e o texto 'E-mail' na imagem estão um pouco confusos, vou seguir a ordem e dar ao segundo campo o nome 'email') */}
-                        <div className="mb-4">
-                            <label htmlFor="emailInput" className="form-label text-muted fw-bold">E-mail</label>
-                            <input
-                                type="email"
-                                className="form-control"
-                                style={inputStyle}
-                                name="email"
-                                placeholder="E-mail"
-                                value={formData.email}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-
-                        
-                        
-
-                        {/* Password */}
-                        <div className="mb-4">
-                            <label htmlFor="password" className="form-label text-muted fw-bold">Senha</label>
-                            <input
-                                type="password"
-                                className="form-control"
-                                style={inputStyle}
-                                name="password"
-                                placeholder="Senha"
-                                value={formData.password}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-                        
-                        {/* Confirm Password com ícone */}
-                        <div className="mb-5">
-                            <label htmlFor="confirmPassword" className="form-label text-muted fw-bold">Confirmar Senha</label>
-                            <div className="input-group">
-                                <input
-                                    type="password"
-                                    className="form-control border-end-0" // Removendo a borda direita para o ícone
-                                    style={{ ...inputStyle, borderRight: 'none' }}
-                                    name="confirmPassword"
-                                    placeholder="Confirmar senha"
-                                    value={formData.confirmPassword}
-                                    onChange={handleChange}
-                                    required
-                                />
-                                {/* Ícone de Olho */}
-                                <span 
-                                    className="input-group-text bg-white" 
-                                    style={{ 
-                                        borderRadius: '.5rem', 
-                                        borderLeft: 'none', 
-                                        height: '3.2rem',
-                                        cursor: 'pointer' // Adiciona cursor para indicar que pode ser clicável
-                                    }}
-                                >
-                                    {/* Exemplo de ícone do Bootstrap Icons */}
-                                    <i className="bi bi-eye-slash-fill text-muted"></i> 
-                                </span>
-                            </div>
-                        </div>
-
-
-                        {/* Botão Register */}
-                        <div className="d-grid justify-content-center text-center">
-                            <button 
-                                type="submit" 
-                                className="btn btn-primary btn-lg fw-bold" 
-                                style={{ backgroundColor: '#4263f5', borderColor: '#4263f5', borderRadius: '0.5rem', padding: '0.75rem 1.5rem' }}
-                            >
-                                Cadastrar
-                            </button>
-
-                           <Link 
-    to="/home" // Rota de destino
-    className="text-primary text-decoration-none fw-bold" // Estilo de link primário (azul) e negrito
-    style={{ 
-        fontSize: '1.2rem', // Ajuste opcional no tamanho da fonte
-        // Removido todos os estilos de 'button' (backgroundColor, padding, borderRadius)
-    }}
->
-    Voltar
-</Link>
-
-                        </div>
-                    </form>
-                </div>
-            </main>
-            
-            {/* O rodapé não está visível na imagem, mas um footer simples pode ser adicionado se necessário */}
+          <div>
+            <OverlayTrigger
+              placement="bottom"
+              overlay={<Tooltip id="tooltip-voltar">Voltar para a tela inicial</Tooltip>}
+            >
+              <Link to="/home" className="btn btn-outline-secondary btn-sm">
+                Voltar
+              </Link>
+            </OverlayTrigger>
+          </div>
         </div>
+      </header>
+
+      <main className="flex-grow-1 d-flex justify-content-center align-items-center">
+        <div style={cardStyle} className="w-100">
+          <h3 className="mb-1 fw-bold">Criar conta</h3>
+          <p className="text-muted mb-4">Preencha os dados abaixo para criar sua conta de suporte.</p>
+
+          {msg.text && (
+            <div className={`alert ${msg.type === "success" ? "alert-success" : "alert-danger"} py-2`} role="alert">
+              {msg.text}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit}>
+            <div className="mb-3">
+              <label className="form-label small text-muted">Nome completo</label>
+              <input
+                name="nome"
+                value={form.nome}
+                onChange={handleChange}
+                className="form-control"
+                style={inputStyle}
+                placeholder="Seu nome completo"
+                required
+              />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label small text-muted">Email</label>
+              <input
+                name="email"
+                value={form.email}
+                onChange={handleChange}
+                type="email"
+                className="form-control"
+                style={inputStyle}
+                placeholder="seu@exemplo.com"
+                required
+              />
+            </div>
+
+            <div className="row gx-2">
+              <div className="col-md-6 mb-3">
+                <label className="form-label small text-muted">Senha</label>
+                <div className="input-group">
+                  <input
+                    name="senha"
+                    value={form.senha}
+                    onChange={handleChange}
+                    type={showSenha ? "text" : "password"}
+                    className="form-control"
+                    style={{ ...inputStyle, borderRight: "none" }}
+                    placeholder="Crie uma senha"
+                    required
+                  />
+                  <OverlayTrigger
+                    placement="top"
+                    overlay={
+                      <Tooltip id="tooltip-senha">
+                        {showSenha ? "Ocultar senha" : "Mostrar senha"}
+                      </Tooltip>
+                    }
+                  >
+                    <button
+                      type="button"
+                      className="btn btn-white border"
+                      onClick={() => setShowSenha((s) => !s)}
+                      style={{ borderRadius: "0 .6rem .6rem 0", height: "3rem" }}
+                      aria-label={showSenha ? "Ocultar senha" : "Mostrar senha"}
+                    >
+                      <i className={`bi ${showSenha ? "bi-eye-fill" : "bi-eye-slash-fill"}`}></i>
+                    </button>
+                  </OverlayTrigger>
+                </div>
+                <small className="text-muted">Mínimo 6 caracteres.</small>
+              </div>
+
+              <div className="col-md-6 mb-3">
+                <label className="form-label small text-muted">Confirmar senha</label>
+                <div className="input-group">
+                  <input
+                    name="confirmarSenha"
+                    value={form.confirmarSenha}
+                    onChange={handleChange}
+                    type={showConfirm ? "text" : "password"}
+                    className="form-control"
+                    style={{ ...inputStyle, borderRight: "none" }}
+                    placeholder="Repita a senha"
+                    required
+                  />
+                  <OverlayTrigger
+                    placement="top"
+                    overlay={
+                      <Tooltip id="tooltip-confirm">
+                        {showConfirm ? "Ocultar confirmação" : "Mostrar confirmação"}
+                      </Tooltip>
+                    }
+                  >
+                    <button
+                      type="button"
+                      className="btn btn-white border"
+                      onClick={() => setShowConfirm((s) => !s)}
+                      style={{ borderRadius: "0 .6rem .6rem 0", height: "3rem" }}
+                      aria-label={showConfirm ? "Ocultar confirmar senha" : "Mostrar confirmar senha"}
+                    >
+                      <i className={`bi ${showConfirm ? "bi-eye-fill" : "bi-eye-slash-fill"}`}></i>
+                    </button>
+                  </OverlayTrigger>
+                </div>
+              </div>
+            </div>
+
+            <div className="d-flex align-items-center justify-content-between mt-4">
+              <button
+                type="submit"
+                className="btn btn-primary px-4 py-2 fw-bold"
+                style={{ backgroundColor: "#3f67f5", borderColor: "#3f67f5", borderRadius: ".6rem" }}
+                disabled={loading}
+              >
+                {loading ? "Cadastrando..." : "Cadastrar"}
+              </button>
+
+              <div className="text-end">
+                <small className="text-muted">
+                  Já tem conta?{" "}
+                  <Link to="/home" className="fw-bold text-decoration-none" style={{ color: "#3f67f5" }}>
+                    Entrar
+                  </Link>
+                </small>
+              </div>
+            </div>
+          </form>
+        </div>
+      </main>
+
+      <footer className="py-3" style={{ backgroundColor: "#fff", borderTop: "1px solid #e9ecef" }}>
+        <div className="container text-center small text-muted">©2025 TechSupport IA.</div>
+      </footer>
+    </div>
   );
 }

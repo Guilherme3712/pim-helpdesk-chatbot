@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from app.repositories.usuario_repository import get_usuario_by_email, create_usuario
 from app.schemas.usuario_schema import UsuarioCreate, UsuarioLogin
+from app.models.usuario_model import Usuario
 from fastapi import HTTPException, status
 from passlib.context import CryptContext
 import jwt
@@ -50,3 +51,7 @@ def login_usuario(db: Session, usuario_data: UsuarioLogin):
 
     token = gerar_token(usuario.id_usuario, usuario.email)
     return {"access_token": token, "token_type": "bearer"}
+
+
+def obter_usuario_por_id(db: Session, usuario_id: int):
+    return db.query(Usuario).filter(Usuario.id_usuario == usuario_id).first()

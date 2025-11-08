@@ -28,7 +28,7 @@ class Chamado(Base):
     descricao = Column(Text)
     categoria = Column(Enum(CategoriaEnum), default=CategoriaEnum.outros)
     prioridade = Column(Enum(PrioridadeEnum), default=PrioridadeEnum.media)
-    status = Column(Enum(StatusEnum), default=StatusEnum.aberto)
+    status = Column(Enum(StatusEnum), default=StatusEnum.em_andamento)
     classificado_por_ia = Column(Boolean, default=False)
     tempo_medio_atendimento = Column(Time)
     data_criacao = Column(DateTime, server_default=func.now())

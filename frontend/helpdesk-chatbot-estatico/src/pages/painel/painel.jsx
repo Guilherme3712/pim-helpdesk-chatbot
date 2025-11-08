@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { Modal, Button } from "react-bootstrap";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:8000/api";
-const DEFAULT_USER_ID = Number(import.meta.env.VITE_USER_ID || 1);
 
 // ------------------------------------------------
 // Sidebar Item
@@ -24,32 +23,32 @@ const SidebarItem = ({ title, route, isActive }) => (
 );
 
 // ------------------------------------------------
-// Metric Card
-// ------------------------------------------------
-const MetricCard = ({ title, value }) => (
+// Metric Card (estilo Home)
+const MetricCard = ({ title, children, onClick }) => (
   <div className="col-lg-3 col-md-6 mb-4">
     <div
-      className="card border-0 p-3 h-100 d-flex flex-column justify-content-center"
+      role={onClick ? "button" : undefined}
+      onClick={onClick}
+      className={`card h-100 p-3 ${onClick ? "hoverable" : ""}`}
       style={{
         borderRadius: "0.75rem",
         boxShadow: "0 4px 12px rgba(0,0,0,.03)",
+        border: "1px solid #e9ecef",
+        cursor: onClick ? "pointer" : "default",
         backgroundColor: "#fff",
       }}
     >
-      <div className="card-body p-2 text-center">
-        <p className="text-muted mb-1 small">{title}</p>
-        <h4 className="card-title fw-bold text-dark" style={{ fontSize: "1.8rem" }}>
-          {value}
-        </h4>
+      <div className="card-body">
+        <h6 className="card-title fw-bold text-dark mb-2">{title}</h6>
+        {children}
       </div>
     </div>
   </div>
 );
 
 // ------------------------------------------------
-// ChamadoModal (atualizado para usar os campos reais)
-// Recebe chamado e historico (array)
-const ChamadoModal = ({ show, onClose, chamado, historico, carregandoHistorico }) => {
+// ChamadoModal
+const ChamadoModal = ({ show, onClose, chamado }) => {
   const navigate = useNavigate();
 
   if (!chamado) return null;
@@ -65,9 +64,7 @@ const ChamadoModal = ({ show, onClose, chamado, historico, carregandoHistorico }
   };
 
   const abrirChat = () => {
-    // fechar modal antes de navegar
     onClose();
-    // navegar para chat com query param -> Chatbot irá ler ?chamado={id}
     navigate(`/chatbot?chamado=${chamado.id_chamado}`);
   };
 
@@ -85,41 +82,26 @@ const ChamadoModal = ({ show, onClose, chamado, historico, carregandoHistorico }
         <p className="mb-3"><strong>Última atualização:</strong> {formatDate(chamado.data_atualizacao)}</p>
 
         <hr />
-
         <h6>Descrição</h6>
         <p>{chamado.descricao ?? "-"}</p>
-
-        <hr />
-
-        <h6>Histórico de Interações</h6>
-        {carregandoHistorico ? (
-          <div className="text-center text-muted">Carregando histórico...</div>
-        ) : (
-          <>
-            {historico && historico.length > 0 ? (
-              <ul className="list-group">
-                {historico.map((inter) => (
-                  <li key={inter.id_interacao} className="list-group-item">
-                    <strong className="text-capitalize">{inter.remetente}:</strong> {inter.mensagem} <br />
-                    <small className="text-muted">{inter.data_hora}</small>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <div className="text-muted">Nenhuma interação registrada.</div>
-            )}
-          </>
-        )}
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={onClose}>Fechar</Button>
-        <Button variant="primary" onClick={abrirChat}>
-          Abrir chat deste chamado
-        </Button>
+        <Button variant="primary" onClick={abrirChat}>Abrir chat deste chamado</Button>
       </Modal.Footer>
     </Modal>
   );
 };
+
+// Helper para formatar duração (ms -> "Xh Ym" ou "Zmin")
+function formatDuration(ms) {
+  if (!ms || ms <= 0) return "—";
+  const totalMinutes = Math.round(ms / 60000);
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  if (hours > 0) return `${hours}h ${minutes}m`;
+  return `${minutes}m`;
+}
 
 // ------------------------------------------------
 // Componente Principal
@@ -129,46 +111,166 @@ export default function Painel() {
 
   const [modalShow, setModalShow] = useState(false);
   const [chamadoSelecionado, setChamadoSelecionado] = useState(null);
+  // eslint-disable-next-line no-unused-vars
   const [historico, setHistorico] = useState([]);
-  const [carregandoHistorico, setCarregandoHistorico] = useState(false);
 
   const [chamados, setChamados] = useState([]);
-  const [metricAbertos, setMetricAbertos] = useState(0);
+  const [metricTotal, setMetricTotal] = useState(0);
   const [metricAndamento, setMetricAndamento] = useState(0);
   const [metricResolvidos, setMetricResolvidos] = useState(0);
+  const [tempoMedioAtendimento, setTempoMedioAtendimento] = useState("—");
 
-  const userId = DEFAULT_USER_ID;
+  // user profile
+  const [user, setUser] = useState(null);
+  const [loadingUser, setLoadingUser] = useState(false);
 
+  // toast (erro/aviso)
+  const [showToast, setShowToast] = useState(false);
+  const [toastMsg, setToastMsg] = useState("");
+  const [toastVariant, setToastVariant] = useState("danger"); // danger, warning, success, info
+
+  // lê do localStorage no momento do mount
   useEffect(() => {
-    carregarChamados();
+    const storedUserId = localStorage.getItem("userId");
+    const storedToken = localStorage.getItem("token");
+    if (!storedUserId) {
+      navigate("/home");
+      return;
+    }
+    const uid = Number(storedUserId);
+    fetchUserProfile(uid, storedToken);
+    carregarChamados(uid, storedToken);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  async function carregarChamados() {
+  // função util para exibir toast (com timeout automático)
+  function exibirToast(msg, variant = "danger", timeout = 5000) {
+    setToastMsg(msg);
+    setToastVariant(variant);
+    setShowToast(true);
+    if (timeout > 0) {
+      setTimeout(() => setShowToast(false), timeout);
+    }
+  }
+
+  // Busca perfil do usuário via endpoint /usuarios/{id}
+  async function fetchUserProfile(userId, token) {
+    if (!userId) return;
+    setLoadingUser(true);
     try {
-      const res = await fetch(`${API_BASE}/chamados/usuario/${userId}`);
-      if (res.status === 404) {
-        setChamados([]);
-        setMetricAbertos(0);
-        setMetricAndamento(0);
-        setMetricResolvidos(0);
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      const res = await fetch(`${API_BASE}/usuarios/${userId}`, { headers });
+      if (!res.ok) {
+        console.warn("[Painel] não foi possível obter perfil:", res.status);
+        exibirToast("Não foi possível carregar perfil do usuário.", "warning");
+        setUser({
+          id_usuario: userId,
+          email: localStorage.getItem("userEmail") || null,
+          nome: localStorage.getItem("userName") || null,
+        });
         return;
       }
-      if (!res.ok) throw new Error(`Erro ${res.status}`);
+      const profile = await res.json();
+      setUser({
+        id_usuario: profile.id_usuario ?? profile.id ?? userId,
+        nome: profile.nome ?? profile.fullName ?? profile.name ?? localStorage.getItem("userEmail"),
+        email: profile.email ?? localStorage.getItem("userEmail"),
+      });
+      if (profile.nome) localStorage.setItem("userName", profile.nome);
+    } catch (err) {
+      console.error("[Painel] erro ao buscar perfil:", err);
+      exibirToast("Erro ao buscar perfil do usuário.", "danger");
+      setUser({
+        id_usuario: userId,
+        email: localStorage.getItem("userEmail") || null,
+        nome: localStorage.getItem("userName") || null,
+      });
+    } finally {
+      setLoadingUser(false);
+    }
+  }
+
+  // carregar chamados do usuário e calcular métricas + tempo médio
+  async function carregarChamados(userIdParam, tokenParam) {
+    const uid = userIdParam ?? Number(localStorage.getItem("userId"));
+    const token = tokenParam ?? localStorage.getItem("token");
+    if (!uid) return;
+    try {
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      const res = await fetch(`${API_BASE}/chamados/usuario/${uid}`, { headers });
+      if (res.status === 404) {
+        setChamados([]);
+        setMetricTotal(0);
+        setMetricAndamento(0);
+        setMetricResolvidos(0);
+        setTempoMedioAtendimento("—");
+        return;
+      }
+      if (!res.ok) {
+        throw new Error(`Erro ${res.status}`);
+      }
       const data = await res.json();
       setChamados(data);
 
-      // calcular métricas
-      const abertos = data.filter((c) => c.status && c.status.toLowerCase() === "aberto").length;
-      const andando = data.filter((c) => c.status && c.status.toLowerCase() === "em_andamento").length;
-      const resolvidos = data.filter((c) => c.status && c.status.toLowerCase() === "fechado").length;
+      // métricas: total (independente do status), andamento e fechados
+      const total = data.length;
+      const andamento = data.filter((c) => (c.status || "").toLowerCase() === "em_andamento").length;
+      const fechados = data.filter((c) => (c.status || "").toLowerCase() === "fechado").length;
 
-      setMetricAbertos(abertos);
-      setMetricAndamento(andando);
-      setMetricResolvidos(resolvidos);
+      setMetricTotal(total);
+      setMetricAndamento(andamento);
+      setMetricResolvidos(fechados);
+
+      // calcula tempo médio:
+      const temposField = (data.map((c) => c.tempo_medio_atendimento).filter(Boolean)) || [];
+      if (temposField.length > 0) {
+        const parsedMs = temposField
+          .map((t) => {
+            try {
+              const parts = String(t).split(":").map(Number);
+              if (parts.length === 3) return (parts[0] * 3600 + parts[1] * 60 + parts[2]) * 1000;
+              if (parts.length === 2) return (parts[0] * 60 + parts[1]) * 60000;
+              return Number(t) * 1000;
+            } catch {
+              return null;
+            }
+          })
+          .filter(Boolean);
+        if (parsedMs.length > 0) {
+          const avg = parsedMs.reduce((a, b) => a + b, 0) / parsedMs.length;
+          setTempoMedioAtendimento(formatDuration(avg));
+        } else {
+          setTempoMedioAtendimento("—");
+        }
+      } else {
+        const diffs = (data
+          .filter((c) => (c.status || "").toLowerCase() === "fechado" && c.data_criacao && c.data_atualizacao)
+          .map((c) => {
+            try {
+              const d1 = new Date(c.data_criacao).getTime();
+              const d2 = new Date(c.data_atualizacao).getTime();
+              return d2 > d1 ? d2 - d1 : null;
+            } catch {
+              return null;
+            }
+          })
+          .filter(Boolean)) || [];
+
+        if (diffs.length > 0) {
+          const avg = diffs.reduce((a, b) => a + b, 0) / diffs.length;
+          setTempoMedioAtendimento(formatDuration(avg));
+        } else {
+          setTempoMedioAtendimento("—");
+        }
+      }
     } catch (err) {
       console.error("Erro carregar chamados:", err);
-      // fallback: lista vazia
+      exibirToast("Não foi possível carregar os chamados. Tente novamente mais tarde.", "danger");
       setChamados([]);
+      setMetricTotal(0);
+      setMetricAndamento(0);
+      setMetricResolvidos(0);
+      setTempoMedioAtendimento("—");
     }
   }
 
@@ -176,14 +278,17 @@ export default function Painel() {
     setChamadoSelecionado(chamado);
     setModalShow(true);
     setHistorico([]);
-    setCarregandoHistorico(true);
 
     try {
-      // endpoint historico: /api/historico/{id_usuario}/{id_chamado}
-      const res = await fetch(`${API_BASE}/historico/${userId}/${chamado.id_chamado}`);
+      const userId = localStorage.getItem("userId");
+      const storedToken = localStorage.getItem("token");
+      if (!userId) return;
+      const res = await fetch(`${API_BASE}/historico/${userId}/${chamado.id_chamado}`, {
+        headers: storedToken ? { Authorization: `Bearer ${storedToken}` } : {},
+      });
       if (!res.ok) {
-        const txt = await res.text();
-        console.warn("Erro historico:", res.status, txt);
+        console.warn("Erro historico:", res.status);
+        exibirToast("Não foi possível carregar o histórico do chamado.", "warning");
         setHistorico([]);
       } else {
         const data = await res.json();
@@ -191,9 +296,8 @@ export default function Painel() {
       }
     } catch (err) {
       console.error("Erro ao buscar histórico:", err);
+      exibirToast("Erro ao buscar histórico do chamado.", "danger");
       setHistorico([]);
-    } finally {
-      setCarregandoHistorico(false);
     }
   }
 
@@ -207,53 +311,121 @@ export default function Painel() {
     }
   };
 
+  // function handleLogout() {
+  //   localStorage.removeItem("token");
+  //   localStorage.removeItem("userId");
+  //   localStorage.removeItem("userEmail");
+  //   localStorage.removeItem("userName");
+  //   navigate("/home");
+  //   window.location.reload();
+  // }
+
+  // percentuais simples para barras
+  const totalForPct = metricTotal || 1;
+  const pctResolvidos = Math.round((metricResolvidos / totalForPct) * 100);
+  const pctAndamento = Math.round((metricAndamento / totalForPct) * 100);
+
   return (
     <div className="d-flex" style={{ minHeight: "100vh", backgroundColor: "#f4f7fa" }}>
       {/* Sidebar */}
       <div className="d-flex flex-column p-4 border-end" style={{ width: "250px", backgroundColor: "#fff", boxShadow: "2px 0 5px rgba(0,0,0,.02)" }}>
-        <div className="d-flex align-items-center mb-5">
+        <div className="d-flex align-items-center mb-3">
           <span className="me-2" style={{ fontSize: "1.5rem", color: "#3f67f5" }}>
             <i className="bi bi-person-circle"></i>
           </span>
-          <h5 className="fw-bold mb-0">Suporte AI</h5>
+          <div>
+            <h5 className="fw-bold mb-0">Suporte AI</h5>
+            <small className="text-muted">{user?.nome ?? user?.email ?? (loadingUser ? "Carregando..." : "Usuário")}</small>
+          </div>
         </div>
+
         <nav className="flex-column">
           <SidebarItem title="Home" route="/home" isActive={false} />
           <SidebarItem title="Painel" route="/painel" isActive={true} />
           <SidebarItem title="Configurações" route="/configuracoes" isActive={false} />
           <hr className="my-3" />
-          <SidebarItem title="Sair" route="/logout" isActive={false} />
+          {/* <button className="btn btn-link text-muted p-0" onClick={handleLogout}>Sair</button> */}
         </nav>
       </div>
 
       {/* Conteúdo */}
       <div className="flex-grow-1 p-5">
-        <div className="text-end mb-4">
-          <i className="bi bi-person-circle text-primary" style={{ fontSize: "2rem", cursor: "pointer" }}></i>
+        <div className="d-flex justify-content-end mb-4">
+          <div className="text-end">
+            <div className="small text-muted">Logado como</div>
+            <div className="fw-bold">{user?.nome ?? user?.email ?? "-"}</div>
+          </div>
         </div>
 
+        {/* métricas com MetricCard (estilo Home) */}
         <div className="row">
-          <MetricCard title="Chamados Abertos" value={metricAbertos} />
-          <MetricCard title="Chamados em Andamento" value={metricAndamento} />
-          <MetricCard title="Chamados Resolvidos" value={metricResolvidos} />
-          <MetricCard title="Tempo médio de atendimento" value="2h30m" />
+          <MetricCard title="Chamados (Total)">
+            <div className="d-flex align-items-center justify-content-between">
+              <div>
+                <h3 className="fw-bold mb-0">{metricTotal}</h3>
+                <small className="text-muted">Total de chamados</small>
+              </div>
+              <div style={{ minWidth: 140 }}>
+                <div style={{ height: 10, background: "#e9ecef", borderRadius: 8 }}>
+                  <div style={{ width: `${Math.min(100, Math.round((metricTotal / Math.max(1, metricTotal)) * 100))}%`, height: "100%", background: "#3f67f5", borderRadius: 8 }} />
+                </div>
+              </div>
+            </div>
+          </MetricCard>
+
+          <MetricCard title="Chamados em Andamento">
+            <div className="d-flex align-items-center justify-content-between">
+              <div>
+                <h3 className="fw-bold mb-0">{metricAndamento}</h3>
+                <small className="text-muted">Em andamento</small>
+              </div>
+              <div style={{ minWidth: 140 }}>
+                <div style={{ height: 10, background: "#e9ecef", borderRadius: 8 }}>
+                  <div style={{ width: `${pctAndamento}%`, height: "100%", background: "#ffc107", borderRadius: 8 }} />
+                </div>
+              </div>
+            </div>
+          </MetricCard>
+
+          <MetricCard title="Chamados Resolvidos">
+            <div className="d-flex align-items-center justify-content-between">
+              <div>
+                <h3 className="fw-bold mb-0">{metricResolvidos}</h3>
+                <small className="text-muted">Encerrados</small>
+              </div>
+              <div style={{ minWidth: 140 }}>
+                <div style={{ height: 10, background: "#e9ecef", borderRadius: 8 }}>
+                  <div style={{ width: `${pctResolvidos}%`, height: "100%", background: "#28a745", borderRadius: 8 }} />
+                </div>
+              </div>
+            </div>
+          </MetricCard>
+
+          <MetricCard title="Tempo médio de atendimento">
+            <div className="d-flex justify-content-center align-items-center">
+              <div>
+                <h3 className="fw-bold mb-0">{tempoMedioAtendimento}</h3>
+                <small className="text-muted">Média histórica</small>
+              </div>
+            </div>
+          </MetricCard>
         </div>
 
+        {/* lista de chamados recentes */}
         <div className="card mt-4 border-0 p-4" style={{ borderRadius: "0.75rem", boxShadow: "0 4px 12px rgba(0,0,0,.03)" }}>
           <div className="card-body">
             <div className="d-flex justify-content-between align-items-center mb-3">
-              <h5 className="fw-bold mb-0">Chamados Recentes</h5>
-              <Button
-                size="sm"
-                className="btn-primary"
-                onClick={() => {
-                  // novo chamado: navega para chat sem id (backend criará novo)
-                  navigate("/chatbot");
-                }}
-              >
-                Novo Chamado
-              </Button>
+                <h5 className="fw-bold mb-0">Chamados Recentes</h5>
+                <Button
+                  size="sm"
+                  className="btn-primary me-5 ms-4 px-5"
+                  onClick={() => navigate("/chatbot")}
+                  style={{ marginLeft: "4rem" }}
+                >
+                  Novo Chamado
+                </Button>
             </div>
+
 
             <div className="table-responsive">
               <table className="table table-borderless">
@@ -302,14 +474,21 @@ export default function Painel() {
         </div>
       </div>
 
-      {/* ChamadoModal existente */}
-      <ChamadoModal
-        show={modalShow}
-        onClose={() => setModalShow(false)}
-        chamado={chamadoSelecionado}
-        historico={historico}
-        carregandoHistorico={carregandoHistorico}
-      />
+      <ChamadoModal show={modalShow} onClose={() => setModalShow(false)} chamado={chamadoSelecionado} />
+
+      {/* Toast container */}
+      <div className="toast-container position-fixed bottom-0 end-0 p-3" style={{ zIndex: 1060 }}>
+        {showToast && (
+          <div className={`toast align-items-center text-bg-${toastVariant} border-0 show`} role="alert" aria-live="assertive" aria-atomic="true">
+            <div className="d-flex">
+              <div className="toast-body">
+                {toastMsg}
+              </div>
+              <button type="button" className="btn-close btn-close-white me-2 m-auto" aria-label="Close" onClick={() => setShowToast(false)}></button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
