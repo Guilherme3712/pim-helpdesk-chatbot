@@ -1,4 +1,3 @@
-// src/components/Chatbot.jsx
 import { useState, useRef, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
