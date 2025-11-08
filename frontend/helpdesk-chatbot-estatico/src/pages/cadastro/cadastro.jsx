@@ -89,11 +89,11 @@ export default function Cadastro() {
   const cardStyle = {
     maxWidth: "560px",
     borderRadius: "1rem",
-    boxShadow: "0 6px 24px rgba(12, 34, 80, 0.06)",
+    boxShadow: "0 6px 24px rgba(12,34,80,0.06)",
     padding: "2.5rem",
     backgroundColor: "#fff",
   };
-
+  
   const inputStyle = { borderRadius: ".6rem", height: "3rem" };
 
   return (

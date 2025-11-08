@@ -191,88 +191,167 @@ export default function Chatbot({ initialUserId = null }) {
   const isClosed = statusChamado === "Fechado";
   const headerBgClass = isClosed ? "bg-secondary" : "bg-primary";
 
-  return (
-    <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "100vh", backgroundColor: "#f4f7fa" }}>
-      <div className="card shadow border-0" style={{ width: "760px", borderRadius: "12px" }}>
-        <div className={`${headerBgClass} text-white card-header d-flex justify-content-between align-items-center`}>
-          <div>
-            <h5 className="mb-0">💬 Chatbot de Suporte</h5>
-            <small style={{ opacity: 0.9 }}>
-              Status: <strong>{statusChamado}</strong>
-              {chamadoId ? <span className="ms-3"># {chamadoId}</span> : null}
-              {!chamadoId && statusChamado !== "Fechado" && <span className="ms-3 text-warning"> (novo chamado será criado ao enviar)</span>}
-            </small>
-          </div>
-
-          <div className="d-flex align-items-center gap-2">
-            <OverlayTrigger placement="bottom" overlay={<Tooltip id="tooltip-voltar">Voltar para o painel</Tooltip>}>
-              <Link to="/painel" className="btn btn-light btn-sm text-primary fw-bold" aria-label="Voltar ao painel">
-                <i className="bi bi-arrow-left-circle me-1"></i> Voltar
-              </Link>
-            </OverlayTrigger>
-
-            {!isClosed && (
-              <OverlayTrigger
-                placement="bottom"
-                overlay={<Tooltip id="tooltip-encerrar">{!chamadoId ? "Nenhum chamado para encerrar" : "Encerrar este chamado"}</Tooltip>}
-              >
-                <span>
-                  {/* span wrapper para permitir tooltip mesmo quando o botão estiver disabled */}
-                  <button
-                    className="btn btn-light btn-sm text-danger fw-bold"
-                    onClick={handleCloseTicket}
-                    disabled={!chamadoId || loading}
-                    aria-label="Encerrar chamado"
-                  >
-                    <i className="bi bi-x-circle me-1"></i> Encerrar
-                  </button>
+ return (
+  <div
+    className="d-flex justify-content-center align-items-center px-3"
+    style={{ minHeight: "100vh", backgroundColor: "#f4f7fa" }}
+  >
+    <div
+      className="card shadow border-0 w-100"
+      style={{ maxWidth: "760px", borderRadius: "12px" }}
+    >
+      {/* Header */}
+      <div
+        className={`${headerBgClass} text-white card-header d-flex flex-wrap justify-content-between align-items-center`}
+      >
+        <div className="mb-2 mb-md-0">
+          <h5 className="mb-0">💬 Chatbot de Suporte</h5>
+          <small style={{ opacity: 0.9 }}>
+            Status: <strong>{statusChamado}</strong>
+            {chamadoId ? (
+              <span className="ms-2"># {chamadoId}</span>
+            ) : (
+              !chamadoId &&
+              statusChamado !== "Fechado" && (
+                <span className="ms-2 text-warning">
+                  (novo chamado será criado ao enviar)
                 </span>
-              </OverlayTrigger>
+              )
             )}
-          </div>
+          </small>
         </div>
 
-        <div
-          className="card-body"
-          ref={scrollRef}
-          style={{ height: "500px", overflowY: "auto", backgroundColor: "#f8f9fa", padding: "1.25rem" }}
-          aria-live="polite"
-        >
-          {messages.map((msg, idx) => (
-            <div key={idx} className={`d-flex mb-3 ${msg.sender === "usuario" ? "justify-content-end" : "justify-content-start"}`}>
-              <div className={`p-2 rounded-3 ${msg.sender === "usuario" ? "bg-primary text-white" : "bg-white border"}`} style={{ maxWidth: "75%", boxShadow: "0 1px 2px rgba(0,0,0,0.05)" }}>
-                {msg.text}
-              </div>
-            </div>
-          ))}
-
-          {loading && <div className="text-center text-muted small">Processando...</div>}
-        </div>
-
-        <div className="card-footer bg-white d-flex gap-2 p-3 border-top">
-          <OverlayTrigger placement="top" overlay={<Tooltip id="tooltip-input">Digite sua mensagem e pressione Enter</Tooltip>}>
-            <input
-              type="text"
-              className="form-control"
-              placeholder={isClosed ? "Chamado encerrado — volte para o painel." : "Digite sua mensagem..."}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSend()}
-              disabled={isClosed || loading}
-              aria-label="Mensagem"
-            />
+        <div className="d-flex flex-wrap align-items-center gap-2">
+          <OverlayTrigger
+            placement="bottom"
+            overlay={<Tooltip id="tooltip-voltar">Voltar para o painel</Tooltip>}
+          >
+            <Link
+              to="/painel"
+              className="btn btn-light btn-sm text-primary fw-bold"
+              aria-label="Voltar ao painel"
+            >
+              <i className="bi bi-arrow-left-circle me-1"></i> Voltar
+            </Link>
           </OverlayTrigger>
 
-          <OverlayTrigger placement="top" overlay={<Tooltip id="tooltip-enviar">Enviar mensagem (ou pressione Enter)</Tooltip>}>
-            <span>
-              {/* span wrapper para permitir tooltip quando o botão estiver disabled */}
-              <button className="btn btn-primary px-4" onClick={handleSend} disabled={isClosed || loading} aria-label="Enviar mensagem">
-                Enviar
-              </button>
-            </span>
-          </OverlayTrigger>
+          {!isClosed && (
+            <OverlayTrigger
+              placement="bottom"
+              overlay={
+                <Tooltip id="tooltip-encerrar">
+                  {!chamadoId
+                    ? "Nenhum chamado para encerrar"
+                    : "Encerrar este chamado"}
+                </Tooltip>
+              }
+            >
+              <span>
+                <button
+                  className="btn btn-light btn-sm text-danger fw-bold"
+                  onClick={handleCloseTicket}
+                  disabled={!chamadoId || loading}
+                  aria-label="Encerrar chamado"
+                >
+                  <i className="bi bi-x-circle me-1"></i> Encerrar
+                </button>
+              </span>
+            </OverlayTrigger>
+          )}
         </div>
       </div>
+
+      {/* Corpo do chat */}
+      <div
+        className="card-body"
+        ref={scrollRef}
+        style={{
+          height: "65vh",
+          overflowY: "auto",
+          backgroundColor: "#f8f9fa",
+          padding: "1.25rem",
+        }}
+        aria-live="polite"
+      >
+        {messages.map((msg, idx) => (
+          <div
+            key={idx}
+            className={`d-flex mb-3 ${
+              msg.sender === "usuario"
+                ? "justify-content-end"
+                : "justify-content-start"
+            }`}
+          >
+            <div
+              className={`p-2 rounded-3 ${
+                msg.sender === "usuario"
+                  ? "bg-primary text-white"
+                  : "bg-white border"
+              }`}
+              style={{
+                maxWidth: "80%",
+                boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+                wordBreak: "break-word",
+              }}
+            >
+              {msg.text}
+            </div>
+          </div>
+        ))}
+
+        {loading && (
+          <div className="text-center text-muted small">Processando...</div>
+        )}
+      </div>
+
+      {/* Rodapé do chat */}
+      <div className="card-footer bg-white d-flex flex-column flex-md-row gap-2 p-3 border-top">
+        <OverlayTrigger
+          placement="top"
+          overlay={
+            <Tooltip id="tooltip-input">
+              Digite sua mensagem e pressione Enter
+            </Tooltip>
+          }
+        >
+          <input
+            type="text"
+            className="form-control flex-fill"
+            placeholder={
+              isClosed
+                ? "Chamado encerrado — volte para o painel."
+                : "Digite sua mensagem..."
+            }
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSend()}
+            disabled={isClosed || loading}
+            aria-label="Mensagem"
+          />
+        </OverlayTrigger>
+
+        <OverlayTrigger
+          placement="top"
+          overlay={
+            <Tooltip id="tooltip-enviar">
+              Enviar mensagem (ou pressione Enter)
+            </Tooltip>
+          }
+        >
+          <span>
+            <button
+              className="btn btn-primary w-100 w-md-auto"
+              onClick={handleSend}
+              disabled={isClosed || loading}
+              aria-label="Enviar mensagem"
+            >
+              Enviar
+            </button>
+          </span>
+        </OverlayTrigger>
+      </div>
     </div>
-  );
+  </div>
+);
+
 }

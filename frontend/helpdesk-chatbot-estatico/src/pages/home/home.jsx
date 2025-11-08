@@ -355,135 +355,205 @@ export default function Home() {
   const total = totalChamados || 1;
   const pctResolvidos = Math.round((resolvidosChamados / total) * 100);
 
-  return (
-    <div className="d-flex flex-column" style={{ minHeight: "100vh", backgroundColor: "#f4f7fa" }}>
-      <header className="navbar navbar-expand-lg py-3" style={customStyles.header}>
-        <div className="container-fluid mx-5 d-flex align-items-center justify-content-between">
-          <div className="d-flex align-items-center">
-            <a className="navbar-brand fw-bold d-flex align-items-center me-4" href="#">
-              <span className="me-2" style={{ fontSize: "1.2rem", color: "#3f67f5" }}>
-                <i className="bi bi-headset"></i>
-              </span>
-              Suporte Técnico IA
-            </a>
-
-            {isLogged() && (
-              <div className="d-none d-md-flex align-items-center gap-4">
-                <div className="small text-muted">Usuário: <strong className="text-dark ms-1">{localStorage.getItem("userEmail")}</strong></div>
-                <div className="small text-muted">Total: <strong className="text-dark ms-1">{loadingMetrics ? "..." : totalChamados}</strong></div>
-                <div className="small text-muted">Resolvidos: <strong className="text-dark ms-1">{loadingMetrics ? "..." : resolvidosChamados}</strong></div>
-              </div>
-            )}
-          </div>
-
-          {!isLogged() ? (
-            <form className="d-flex align-items-center" onSubmit={handleLogin}>
-              <input className="form-control form-control-sm me-2" style={{ width: "180px" }} placeholder="Email" value={emailInput} onChange={(e) => setEmailInput(e.target.value)} type="email" />
-              <input className="form-control form-control-sm me-2" style={{ width: "140px" }} placeholder="Senha" value={senhaInput} onChange={(e) => setSenhaInput(e.target.value)} type="password" />
-              <button className="btn btn-primary btn-sm px-3" style={customStyles.btnPrimary} type="submit" disabled={loadingLogin}>
-                {loadingLogin ? "Entrando..." : "Login"}
-              </button>
-            </form>
-          ) : (
-            <div className="d-flex align-items-center gap-2">
-              <span className="small text-muted">Olá, <strong className="text-dark">{localStorage.getItem("userEmail")}</strong></span>
-              <button className="btn btn-outline-secondary btn-sm" onClick={handleLogout}>Sair</button>
-            </div>
-          )}
-        </div>
-      </header>
-
-      <main className="container mt-5 flex-grow-1" >
-        <div className="row mb-5">
-          <div className="col-8">
-            <h1 className="fw-bold mb-3" style={{ fontSize: "2.5rem" }}>Sistema Integrado de Gestão de Chamados</h1>
-            <p className="lead text-muted mb-4">O sistema de gestão de chamados e suporte técnico baseado em recursos.</p>
-
-            <div className="d-flex gap-2">
-              {!isLogged() && (
-                <Link to="/cadastro" className="btn btn-outline-primary btn-lg px-4 fw-bold" style={{ color: "#3f67f5" }}>
-                  Cadastre-se
-                </Link>
-              )}
-              
-              {isLogged() && (
-              <button className="btn btn-primary btn-lg px-4 fw-bold" style={customStyles.btnPrimary} onClick={goToPainel}>
-                Ir para o Painel
-              </button>
-                     )}
-              {isLogged() && (
-                <button className="btn btn-outline-secondary btn-lg px-4 fw-bold" onClick={goToChatNovo}>
-                  Abrir novo chamado
-                </button>
-              )}
-            </div>
-          </div>
+ return (
+  <div className="d-flex flex-column" style={{ minHeight: "100vh", backgroundColor: "#f4f7fa" }}>
+    {/* HEADER */}
+    <header className="navbar navbar-expand-lg py-3" style={customStyles.header}>
+      <div className="container-fluid px-3 px-md-5 d-flex flex-wrap align-items-center justify-content-between">
+        <div className="d-flex align-items-center mb-2 mb-md-0">
+          <a className="navbar-brand fw-bold d-flex align-items-center me-3" href="#">
+            <span className="me-2" style={{ fontSize: "1.2rem", color: "#3f67f5" }}>
+              <i className="bi bi-headset"></i>
+            </span>
+            Suporte Técnico IA
+          </a>
         </div>
 
-        <div className="row mt-4">
-          <MetricCard title="Chamados (Total)" onClick={goToPainel}>
-            <div className="d-flex align-items-center justify-content-between">
-              <div>
-                <h2 className="fw-bold">{loadingMetrics ? "..." : totalChamados}</h2>
-                <small className="text-muted">Quantidade total de chamados</small>
-              </div>
-              <div style={{ minWidth: 100 }}>
-                <div style={{ height: 10, background: "#e9ecef", borderRadius: 8 }}>
-                  <div style={{ width: `${Math.min(100, Math.round((totalChamados / Math.max(1, totalChamados)) * 100))}%`, height: "100%", background: "#3f67f5", borderRadius: 8 }} />
-                </div>
-              </div>
-            </div>
-          </MetricCard>
-
-          <MetricCard title="Chamados Resolvidos" onClick={goToPainel}>
-            <div className="d-flex align-items-center justify-content-between">
-              <div>
-                <h2 className="fw-bold">{loadingMetrics ? "..." : resolvidosChamados}</h2>
-                <small className="text-muted">Quantidade de chamados com status encerrado</small>
-              </div>
-              <div style={{ minWidth: 100 }}>
-                <div style={{ height: 10, background: "#e9ecef", borderRadius: 8 }}>
-                  <div style={{ width: `${Math.max(0, pctResolvidos)}%`, height: "100%", background: "#28a745", borderRadius: 8 }} />
-                </div>
-              </div>
-            </div>
-          </MetricCard>
-
-          <MetricCard title="Tempo Médio de Atendimento">
-            <div className="d-flex justify-content-center align-items-center h-100">
-              <h2 className="display-5 fw-bold text-dark">{loadingMetrics ? "..." : tempoMedioAtendimento}</h2>
-              <div className="ms-3 text-muted small"> (média histórica)</div>
-            </div>
-          </MetricCard>
-        </div>
-      </main>
-
-      <footer className="py-3" style={customStyles.footer}> 
-        <div className="container d-flex justify-content-center align-items-center small text-muted">
-          <p className="mb-0">©2025 TechSupport IA. Todos os direitos reservados.</p>
-          <div className="d-flex">
-            <a href="#" className="text-decoration-none text-muted me-3"><i className="bi bi-facebook"></i></a>
-            <a href="#" className="text-decoration-none text-muted me-3"><i className="bi bi-twitter"></i></a>
-            <a href="#" className="text-decoration-none text-muted"><i className="bi bi-linkedin"></i></a>
-          </div>
-        </div>
-      </footer>
-
-      {/* Toast container */}
-      <div className="toast-container position-fixed bottom-0 end-0 p-3" style={{ zIndex: 1060 }}>
-        {showToast && (
-          <div className={`toast align-items-center text-bg-${toastVariant} border-0 show`} role="alert" aria-live="assertive" aria-atomic="true">
-            <div className="d-flex">
-              <div className="toast-body">
-                {toastMsg}
-              </div>
-              <button type="button" className="btn-close btn-close-white me-2 m-auto" aria-label="Close" onClick={() => setShowToast(false)}></button>
-            </div>
+        {!isLogged() ? (
+          <form
+            className="d-flex flex-column flex-md-row align-items-center gap-2"
+            onSubmit={handleLogin}
+          >
+            <input
+              className="form-control form-control-sm"
+              style={{ width: "100%", maxWidth: "180px" }}
+              placeholder="Email"
+              value={emailInput}
+              onChange={(e) => setEmailInput(e.target.value)}
+              type="email"
+            />
+            <input
+              className="form-control form-control-sm"
+              style={{ width: "100%", maxWidth: "140px" }}
+              placeholder="Senha"
+              value={senhaInput}
+              onChange={(e) => setSenhaInput(e.target.value)}
+              type="password"
+            />
+            <button
+              className="btn btn-primary btn-sm px-3 w-100 w-md-auto"
+              style={customStyles.btnPrimary}
+              type="submit"
+              disabled={loadingLogin}
+            >
+              {loadingLogin ? "Entrando..." : "Login"}
+            </button>
+          </form>
+        ) : (
+          <div className="d-flex flex-column flex-md-row align-items-center gap-2">
+            <span className="small text-muted text-center text-md-start">
+              Olá, <strong className="text-dark">{localStorage.getItem("userEmail")}</strong>
+            </span>
+            <button className="btn btn-outline-secondary btn-sm w-100 w-md-auto" onClick={handleLogout}>
+              Sair
+            </button>
           </div>
         )}
       </div>
+    </header>
+
+    {/* CONTEÚDO */}
+    <main className="container mt-5 flex-grow-1 px-3 px-md-5">
+      <div className="row mb-5">
+        <div className="col-12 col-md-8">
+          <h1 className="fw-bold mb-3" style={{ fontSize: "clamp(1.5rem, 3vw, 2.5rem)" }}>
+            Sistema Integrado de Gestão de Chamados
+          </h1>
+          <p className="lead text-muted mb-4">
+            O sistema de gestão de chamados e suporte técnico baseado em recursos.
+          </p>
+
+          <div className="d-flex flex-column flex-sm-row gap-2">
+            {!isLogged() && (
+              <Link
+                to="/cadastro"
+                className="btn btn-outline-primary btn-lg fw-bold"
+                style={{ color: "#3f67f5" }}
+              >
+                Cadastre-se
+              </Link>
+            )}
+
+            {isLogged() && (
+              <>
+                <button
+                  className="btn btn-primary btn-lg fw-bold"
+                  style={customStyles.btnPrimary}
+                  onClick={goToPainel}
+                >
+                  Ir para o Painel
+                </button>
+                <button
+                  className="btn btn-outline-secondary btn-lg fw-bold"
+                  onClick={goToChatNovo}
+                >
+                  Abrir novo chamado
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* MÉTRICAS */}
+      <div className="row g-3 mt-4">
+        <MetricCard title="Chamados (Total)">
+          <div className="d-flex align-items-center justify-content-between flex-wrap">
+            <div>
+              <h2 className="fw-bold">{loadingMetrics ? "..." : totalChamados}</h2>
+              <small className="text-muted">Quantidade total de chamados</small>
+            </div>
+            <div className="w-100 mt-2 mt-md-0" style={{ maxWidth: 120 }}>
+              <div style={{ height: 10, background: "#e9ecef", borderRadius: 8 }}>
+                <div
+                  style={{
+                    width: `${Math.min(100, Math.round((totalChamados / Math.max(1, totalChamados)) * 100))}%`,
+                    height: "100%",
+                    background: "#3f67f5",
+                    borderRadius: 8,
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        </MetricCard>
+
+        <MetricCard title="Chamados Resolvidos">
+          <div className="d-flex align-items-center justify-content-between flex-wrap">
+            <div>
+              <h2 className="fw-bold">{loadingMetrics ? "..." : resolvidosChamados}</h2>
+              <small className="text-muted">Chamados com status encerrado</small>
+            </div>
+            <div className="w-100 mt-2 mt-md-0" style={{ maxWidth: 120 }}>
+              <div style={{ height: 10, background: "#e9ecef", borderRadius: 8 }}>
+                <div
+                  style={{
+                    width: `${Math.max(0, pctResolvidos)}%`,
+                    height: "100%",
+                    background: "#28a745",
+                    borderRadius: 8,
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        </MetricCard>
+
+        <MetricCard title="Tempo Médio de Atendimento">
+          <div className="d-flex flex-column flex-md-row justify-content-center align-items-center text-center">
+            <h2 className="display-6 fw-bold text-dark mb-2 mb-md-0">
+              {loadingMetrics ? "..." : tempoMedioAtendimento}
+            </h2>
+            <div className="ms-md-3 text-muted small">(média histórica)</div>
+          </div>
+        </MetricCard>
+      </div>
+    </main>
+
+    {/* FOOTER */}
+    <footer className="py-3 mt-auto" style={customStyles.footer}>
+      <div className="container text-center small text-muted">
+        <p className="mb-1">©2025 TechSupport IA. Todos os direitos reservados.</p>
+        <div>
+          <a href="#" className="text-decoration-none text-muted me-3">
+            <i className="bi bi-facebook"></i>
+          </a>
+          <a href="#" className="text-decoration-none text-muted me-3">
+            <i className="bi bi-twitter"></i>
+          </a>
+          <a href="#" className="text-decoration-none text-muted">
+            <i className="bi bi-linkedin"></i>
+          </a>
+        </div>
+      </div>
+    </footer>
+
+    {/* TOAST */}
+    <div
+      className="toast-container position-fixed bottom-0 end-0 p-3"
+      style={{ zIndex: 1060 }}
+    >
+      {showToast && (
+        <div
+          className={`toast align-items-center text-bg-${toastVariant} border-0 show`}
+          role="alert"
+          aria-live="assertive"
+          aria-atomic="true"
+        >
+          <div className="d-flex">
+            <div className="toast-body">{toastMsg}</div>
+            <button
+              type="button"
+              className="btn-close btn-close-white me-2 m-auto"
+              aria-label="Close"
+              onClick={() => setShowToast(false)}
+            ></button>
+          </div>
+        </div>
+      )}
     </div>
-  );
-  
+  </div>
+);
+ 
 }
 

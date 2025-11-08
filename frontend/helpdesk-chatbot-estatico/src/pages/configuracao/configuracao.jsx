@@ -127,10 +127,12 @@ export default function Configuracoes() {
   }
 
   return (
-    <div className="d-flex" style={{ minHeight: "100vh", backgroundColor: "#f4f7fa" }}>
-      {/* Sidebar */}
-      <div className="d-flex flex-column p-4 border-end" style={{ width: "250px", backgroundColor: "#fff", boxShadow: "2px 0 5px rgba(0,0,0,.02)" }}>
-        <div className="d-flex align-items-center mb-3">
+  <div className="container-fluid" style={{ minHeight: "100vh", backgroundColor: "#f4f7fa" }}>
+    <div className="row g-0 min-vh-100">
+      {/* Sidebar (desktop only) */}
+      <aside className="col-md-3 col-xl-2 d-none d-md-flex flex-column p-4 border-end bg-white"
+             style={{ boxShadow: "2px 0 5px rgba(0,0,0,.02)" }}>
+        <div className="d-flex align-items-center mb-4">
           <span className="me-2" style={{ fontSize: "1.5rem", color: "#3f67f5" }}>
             <i className="bi bi-person-circle"></i>
           </span>
@@ -145,68 +147,120 @@ export default function Configuracoes() {
           <SidebarItem title="Painel" route="/painel" isActive={false} />
           <SidebarItem title="Configurações" route="/configuracoes" isActive={true} />
           <hr className="my-3" />
-          {/* <button className="btn btn-link text-muted p-0" onClick={handleLogout}>Sair</button> */}
+          {/* espaço para outros controles */}
         </nav>
-      </div>
+      </aside>
 
-      {/* Conteúdo principal */}
-      <div className="flex-grow-1 p-5">
+      {/* Main content */}
+      <main className="col-12 col-md-9 col-xl-10 p-3 p-md-5">
+        {/* Mobile top mini-bar (visible only on small screens) */}
+        <div className="d-flex d-md-none justify-content-between align-items-center mb-3">
+          <div className="d-flex align-items-center">
+            <span className="me-2" style={{ fontSize: "1.4rem", color: "#3f67f5" }}>
+              <i className="bi bi-person-circle"></i>
+            </span>
+            <div>
+              <div className="fw-bold" style={{ fontSize: "0.95rem" }}>{user?.nome ?? localStorage.getItem("userName") ?? "Usuário"}</div>
+              <small className="text-muted">{user?.email ?? localStorage.getItem("userEmail") ?? ""}</small>
+            </div>
+          </div>
+
+          <div className="d-flex gap-2">
+            <a href="/home" className="btn btn-sm btn-outline-secondary">Home</a>
+            <a href="/painel" className="btn btn-sm btn-outline-secondary">Painel</a>
+          </div>
+        </div>
+
+        {/* Header */}
         <div className="d-flex justify-content-between align-items-start mb-4">
           <div>
-            <h4 className="mb-1">Configuração</h4>
+            <h4 className="mb-1">Configurações</h4>
             <p className="text-muted mb-0">Informações da conta</p>
           </div>
 
-          <div className="text-end">
+          <div className="text-end d-none d-md-block">
             <small className="text-muted">Logado como</small>
             <div className="fw-bold">{user?.nome ?? user?.email ?? localStorage.getItem("userEmail") ?? "-"}</div>
           </div>
         </div>
 
-        <div className="row">
-          {/* Card com as informações da conta (read-only) */}
-          <div className="col-lg-6">
-            <div className="card p-3 mb-4" style={{ borderRadius: ".75rem", boxShadow: "0 4px 12px rgba(0,0,0,.03)" }}>
-              <div className="card-body">
+        {/* Grid responsivo: cada card ocupa col-12 em mobile e col-lg-6 em desktop */}
+        <div className="row gx-3 align-items-stretch">
+          {/* Account info card */}
+          <div className="col-12 col-lg-6 d-flex">
+            <div
+              className="card p-3 mb-4 h-100 flex-grow-1"
+              style={{
+                borderRadius: ".75rem",
+                boxShadow: "0 4px 12px rgba(0,0,0,.03)"
+              }}
+            >
+              <div className="card-body d-flex flex-column">
                 <h6 className="fw-bold">Informações da Conta</h6>
 
                 <div className="mb-3">
                   <label className="form-label small text-muted">Nome do usuário</label>
-                  <div className="form-control-plaintext">{loadingUser ? "Carregando..." : (user?.nome ?? "-")}</div>
+                  <div className="form-control-plaintext">
+                    {loadingUser ? "Carregando..." : (user?.nome ?? "-")}
+                  </div>
                 </div>
 
                 <div className="mb-3">
                   <label className="form-label small text-muted">E-mail</label>
-                  <div className="form-control-plaintext">{loadingUser ? "Carregando..." : (user?.email ?? "-")}</div>
+                  <div className="form-control-plaintext">
+                    {loadingUser ? "Carregando..." : (user?.email ?? "-")}
+                  </div>
                 </div>
-
-                {/* <div className="mb-3">
-                  <label className="form-label small text-muted">Cargo</label>
-                  <div className="form-control-plaintext">{loadingUser ? "Carregando..." : (user?.cargo ?? "Usuário")}</div>
-                </div> */}
               </div>
             </div>
           </div>
 
-          {/* Atividades recentes / ações */}
-          <div className="col-lg-6">
-            <div className="card p-3 mb-4" style={{ borderRadius: ".75rem", boxShadow: "0 4px 12px rgba(0,0,0,.03)" }}>
-              <div className="card-body">
-                <h6 className="fw-bold">Atividades Recentes</h6>
-                <p className="text-muted small">Histórico de interações com o suporte (somente visualização).</p>
-                {/* Se tiver endpoint para histórico do usuário, busque aqui e liste. */}
-                <div className="text-muted small">Nenhuma atividade encontrada.</div>
+          {/* Recent activities / actions */}
+          <div className="col-12 col-lg-6 d-flex">
+            <div
+              className="card p-3 mb-4 h-100 flex-grow-1"
+              style={{
+                borderRadius: ".75rem",
+                boxShadow: "0 4px 12px rgba(0,0,0,.03)"
+              }}
+            >
+              <div className="card-body d-flex flex-column">
+                <div>
+                  <h6 className="fw-bold">Atividades Recentes</h6>
+                  <p className="text-muted small mb-2">
+                    Histórico de interações com o suporte (visualização).
+                  </p>
+                  <div className="text-muted small">Nenhuma atividade encontrada.</div>
+                </div>
+
                 <hr />
-                <div className="d-flex justify-content-end">
-                  <Button variant="outline-danger" size="sm" onClick={handleCloseAccount}>Logout</Button>
+
+                <div className="mt-auto d-flex justify-content-end gap-2">
+                  <Button
+                    variant="outline-secondary"
+                    size="sm"
+                    onClick={() => navigate("/painel")}
+                  >
+                    Voltar
+                  </Button>
+                  <Button
+                    variant="outline-danger"
+                    size="sm"
+                    onClick={handleCloseAccount}
+                  >
+                    Logout
+                  </Button>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
+        </div>  
 
-      {/* ToastContainer (top-right) */}
+      </main>
+    </div>
+
+    {/* ToastContainer (top-right) */}
+    <div className="position-fixed top-0 end-0 p-3" style={{ zIndex: 1060 }}>
       <ToastContainer position="top-end" className="p-3">
         <Toast show={toast.show} onClose={() => setToast((t) => ({ ...t, show: false }))} bg={toast.variant === "success" ? "success" : "light"} delay={3500} autohide>
           <Toast.Header>
@@ -218,5 +272,7 @@ export default function Configuracoes() {
         </Toast>
       </ToastContainer>
     </div>
-  );
+  </div>
+);
+
 }
