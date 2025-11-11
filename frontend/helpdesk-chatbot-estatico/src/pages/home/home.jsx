@@ -383,7 +383,7 @@ export default function Home() {
             />
             <input
               className="form-control form-control-sm"
-              style={{ width: "100%", maxWidth: "140px" }}
+              style={{ width: "100%", maxWidth: "180px" }}
               placeholder="Senha"
               value={senhaInput}
               onChange={(e) => setSenhaInput(e.target.value)}

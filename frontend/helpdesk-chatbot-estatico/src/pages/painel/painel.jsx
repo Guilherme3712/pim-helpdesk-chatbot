@@ -420,10 +420,22 @@ export default function Painel() {
             </MetricCard>
           </div>
 
-
           {/* --- tabela para desktop (md+) --- */}
           <div className="d-none d-md-block">
-            <div className="table-responsive" style={{ borderRadius: ".75rem", boxShadow: "0 4px 12px rgba(0,0,0,.03)" }}>
+            <div className="card table-responsive" style={{ borderRadius: ".75rem", boxShadow: "0 4px 12px rgba(0,0,0,.03)" }}>
+              <div className="card-body">
+                <div className="d-flex justify-content-between align-items-center mb-3">
+                    <h5 className="fw-bold mb-0">Chamados Recentes</h5>
+                    <Button
+                      size="sm"
+                      className="btn-primary me-4 ms-4 px-5"
+                      onClick={() => navigate("/chatbot")}
+                      style={{ marginLeft: "4rem" }}
+                    >
+                      Novo Chamado
+                    </Button>
+                </div>
+              </div>
               <table className="table table-borderless mb-0">
                 <thead>
                   <tr className="text-muted small">
@@ -472,6 +484,19 @@ export default function Painel() {
 
           {/* --- cards empilhados para mobile (sm) --- */}
           <div className="d-block d-md-none">
+            <div className="card-body">
+                <div className="d-flex justify-content-between align-items-center mb-3">
+                    <h5 className="fw-bold mb-0">Chamados Recentes</h5>
+                    <Button
+                      size="sm"
+                      className="btn-primary me-2"
+                      onClick={() => navigate("/chatbot")}
+                      style={{ marginLeft: "4rem" }}
+                    >
+                      Novo Chamado
+                    </Button>
+                </div>
+              </div>
             {chamados.length === 0 ? (
               <div className="text-center text-muted py-3">Nenhum chamado encontrado.</div>
             ) : (
