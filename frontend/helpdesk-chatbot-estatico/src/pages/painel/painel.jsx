@@ -25,23 +25,26 @@ const SidebarItem = ({ title, route, isActive }) => (
 // Metric Card
 // -----------------------------
 const MetricCard = ({ title, children, onClick }) => (
-  <div className="col-xl-3 col-lg-6 col-md-6 col-sm-6 mb-4 ">
+  <div className="col-xl-3 col-lg-6 col-md-6 col-sm-12 mb-4">
     <div
-      className={`card h-100 p-3 ${onClick ? "hoverable" : ""}`}
+      className={`card h-100 p-3 shadow-sm ${onClick ? "hoverable" : ""}`}
       onClick={onClick}
       role={onClick ? "button" : undefined}
       style={{
-        borderRadius: "0.75rem",
-        boxShadow: "0 4px 12px rgba(0,0,0,.03)",
-        border: "1px solid #e9ecef",
-        cursor: onClick ? "pointer" : "default",
-        backgroundColor: "#fff",
-        transition: "transform 0.16s ease, box-shadow 0.16s ease",
+        borderRadius: "1rem",
+        border: "0",
+        background: "#fff",
+        transition: "0.2s ease",
+        minHeight: 140,
+        display: "flex",
       }}
     >
-      <div className="card-body p-2">
-        <h6 className="card-title fw-bold text-dark mb-2">{title}</h6>
-        {children}
+      <div className="card-body p-0 d-flex flex-column justify-content-between">
+        {/* Cabeçalho (conteúdo original) */}
+        <div className="d-flex flex-column">{children}</div>
+
+        {/* Título no rodapé igual ao template */}
+        <small className="text-muted mt-3 d-block">{title}</small>
       </div>
     </div>
   </div>
@@ -361,63 +364,71 @@ export default function Painel() {
 
           {/* Métricas (grid responsivo para 4 cards menores) */}
           <div className="row gx-3">
-            <MetricCard title="Chamados (Total)">
-              <div className="d-flex align-items-center justify-content-between">
-                <div>
-                  <h4 className="fw-bold mb-0">{metricTotal}</h4>
-                  <small className="text-muted">Total de chamados</small>
-                </div>
-                <div style={{ minWidth: 120 }}>
-                  <div style={{ height: 10, background: "#e9ecef", borderRadius: 8 }}>
-                    <div
-                      style={{
-                        width: `${Math.min(100, Math.round((metricTotal / Math.max(1, metricTotal)) * 100))}%`,
-                        height: "100%",
-                        background: "#3f67f5",
-                        borderRadius: 8,
-                      }}
-                    />
-                  </div>
-                </div>
+            <MetricCard title="Total de Chamados Abertos">
+              <h4 className="fw-bold mb-0">{metricTotal}</h4>
+              <small className="text-muted">Total de chamados</small>
+
+              <div className="progress mt-2" style={{ height: 6 }}>
+                <div
+                  className="progress-bar"
+                  style={{
+                    width: "100%",
+                    background: "#3f67f5",
+                    borderRadius: 10,
+                  }}
+                />
               </div>
             </MetricCard>
 
             <MetricCard title="Chamados em Andamento">
-              <div className="d-flex align-items-center justify-content-between">
-                <div>
-                  <h4 className="fw-bold mb-0">{metricAndamento}</h4>
-                  <small className="text-muted">Em andamento</small>
-                </div>
-                <div style={{ minWidth: 120 }}>
-                  <div style={{ height: 10, background: "#e9ecef", borderRadius: 8 }}>
-                    <div style={{ width: `${pctAndamento}%`, height: "100%", background: "#ffc107", borderRadius: 8 }} />
-                  </div>
-                </div>
+              <h4 className="fw-bold mb-0">{metricAndamento}</h4>
+              <small className="text-muted">Em andamento</small>
+
+              <div className="progress mt-2" style={{ height: 6 }}>
+                <div
+                  className="progress-bar"
+                  style={{
+                    width: `${pctAndamento}%`,
+                    background: "#ffc107",
+                    borderRadius: 10,
+                  }}
+                />
               </div>
             </MetricCard>
 
             <MetricCard title="Chamados Resolvidos">
-              <div className="d-flex align-items-center justify-content-between">
-                <div>
-                  <h4 className="fw-bold mb-0">{metricResolvidos}</h4>
-                  <small className="text-muted">Encerrados</small>
-                </div>
-                <div style={{ minWidth: 120 }}>
-                  <div style={{ height: 10, background: "#e9ecef", borderRadius: 8 }}>
-                    <div style={{ width: `${pctResolvidos}%`, height: "100%", background: "#28a745", borderRadius: 8 }} />
-                  </div>
-                </div>
+              <h4 className="fw-bold mb-0">{metricResolvidos}</h4>
+              <small className="text-muted">Encerrados</small>
+
+              <div className="progress mt-2" style={{ height: 6 }}>
+                <div
+                  className="progress-bar"
+                  style={{
+                    width: `${pctResolvidos}%`,
+                    background: "#28a745",
+                    borderRadius: 10,
+                  }}
+                />
               </div>
             </MetricCard>
 
+
             <MetricCard title="Tempo médio de atendimento">
-              <div className="d-flex justify-content-center align-items-center">
-                <div>
-                  <h4 className="fw-bold mb-0">{tempoMedioAtendimento}</h4>
-                  <small className="text-muted">Média histórica</small>
-                </div>
-              </div>
-            </MetricCard>
+            <h4 className="fw-bold mb-0">{tempoMedioAtendimento}</h4>
+            <small className="text-muted">Média histórica</small>
+
+            <div className="progress mt-2" style={{ height: 6 }}>
+              <div
+                className="progress-bar"
+                style={{
+                  width: "100%",
+                  background: "#9e9e9eff",
+                  borderRadius: 10,
+                }}
+              />
+            </div>
+          </MetricCard>
+
           </div>
 
           {/* --- tabela para desktop (md+) --- */}
