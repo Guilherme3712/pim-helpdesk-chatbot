@@ -18,7 +18,7 @@ pip install 'pydantic[email]'
 
 pip install passlib
 
-pip install jwt
+pip install PyJWT
 
 pip install bcrypt
 

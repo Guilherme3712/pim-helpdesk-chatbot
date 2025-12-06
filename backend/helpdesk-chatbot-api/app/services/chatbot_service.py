@@ -24,7 +24,7 @@ def processar_interacao(db, request):
 
     intencao = detectar_intencao(user_message)
 
-    # 1️⃣ Fechar chamado
+    # 1 Fechar chamado
     if intencao == "fechar_chamado":
         chamado_fechado = fechar_chamado_aberto(db, request.id_usuario)
         if chamado_fechado:
@@ -44,7 +44,7 @@ def processar_interacao(db, request):
                 "chamado": None
             }
 
-    # 2️⃣ Criar novo chamado se não houver id_chamado
+    # 2 Criar novo chamado se não houver id_chamado
     if not getattr(request, "id_chamado", None):
         categoria, prioridade = classificar_problema(user_message)
         chamado = criar_chamado(
@@ -61,10 +61,10 @@ def processar_interacao(db, request):
         id_chamado = request.id_chamado
         chamado = {"id_chamado": id_chamado}  # apenas referência
 
-    # 3️⃣ Gerar resposta IA usando a instância global do Chatbot
+    # 3 Gerar resposta IA usando a instância global do Chatbot
     resposta_ia = chatbot.generate_response(user_message)
 
-    # 4️⃣ Salvar interações (com id_usuario incluído)
+    # 4 Salvar interações (com id_usuario incluído)
     salvar_interacao(db, request.id_usuario, id_chamado, RemetenteEnum.usuario, user_message)
     salvar_interacao(db, request.id_usuario, id_chamado, RemetenteEnum.ia, resposta_ia)
 

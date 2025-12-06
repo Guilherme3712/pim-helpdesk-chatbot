@@ -1,4 +1,3 @@
-# app/ai/rag/knowledge_loader.py
 import os
 from typing import List, Dict
 

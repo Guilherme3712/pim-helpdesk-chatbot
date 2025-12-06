@@ -1,8 +1,7 @@
-# app/db/database.py
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-# 🔧 Substitua usuário e senha pelos do seu MySQL
+# Substitua usuário e senha pelos do seu MySQL
 DATABASE_URL = "mysql+pymysql://root:admin@localhost:3306/db_suporte_ia"
 
 # Cria engine e sessão

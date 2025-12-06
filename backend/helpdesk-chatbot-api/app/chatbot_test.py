@@ -1,4 +1,3 @@
-# test_chatbot.py
 from app.ai.rag.chatbot import ChatbotRAG
 
 bot = ChatbotRAG()  # pega a API key do GROQ_API_KEY

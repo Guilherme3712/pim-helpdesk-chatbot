@@ -1,4 +1,3 @@
-# app/main.py
 from fastapi import FastAPI
 from app.database import Base, engine
 from app.controllers.chatbot_controller import router as chat_router
@@ -18,16 +17,16 @@ app = FastAPI(
 
 app.add_middleware(
   CORSMiddleware,
-  allow_origins=["http://localhost:5173"],  # ou ["*"] em dev
+  allow_origins=["*"],  # ou ["*"] em dev
   allow_credentials=True,
   allow_methods=["*"],
   allow_headers=["*"],
 )
 
 # Rotas principais
-app.include_router(chat_router, prefix="/api")         # Rota do chatbot (já existente)
-app.include_router(chamados_router, prefix="/api")     # Nova rota de chamados
-app.include_router(usuario_router, prefix="/api")
+app.include_router(chat_router, prefix="/api")         # Rota do chatbot
+app.include_router(chamados_router, prefix="/api")     # Rota de chamados
+app.include_router(usuario_router, prefix="/api")      # Rota de Usuario
 
 @app.get("/")
 def root():

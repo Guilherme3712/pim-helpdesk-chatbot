@@ -6,7 +6,7 @@ from app.services.chatbot_service import processar_interacao, obter_historico_ch
 
 router = APIRouter(tags=["ChatBot"])
 
-# 🔹 Request model
+# Request model
 class ChatRequest(BaseModel):
     id_usuario: int
     mensagem: str

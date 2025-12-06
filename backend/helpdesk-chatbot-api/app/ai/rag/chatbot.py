@@ -1,4 +1,3 @@
-# app/ai/rag/chatbot.py
 import os
 import requests
 from typing import List
@@ -17,7 +16,7 @@ class ChatbotRAG:
 
         self.api_url = "https://api.groq.com/openai/v1/chat/completions"
 
-        # 1️⃣ Carrega documentos da knowledge base
+        # 1 Carrega documentos da knowledge base
         loader = KnowledgeLoader(knowledge_path)
         docs = loader.load_documents()
         self.retriever = Retriever()
@@ -30,10 +29,10 @@ class ChatbotRAG:
         self.history: List[dict] = []
 
     def generate_response(self, user_input: str, top_k_docs: int = 3) -> str:
-        # 2️⃣ Busca contexto relevante
+        # 2 Busca contexto relevante
         context = self.retriever.search(user_input, top_k=top_k_docs)
 
-        # 3️⃣ Monta prompt
+        # 3 Monta prompt
         prompt = (
             f"Você é um assistente técnico. Use apenas as informações do contexto abaixo.\n\n"
             f"Contexto:\n{context}\n\n"
@@ -64,7 +63,7 @@ class ChatbotRAG:
         except Exception as e:
             answer = f"[ChatbotRAG] Erro ao gerar resposta: {e}"
 
-        # 4️⃣ Atualiza histórico
+        # 4 Atualiza histórico
         self.history.append({"user": user_input, "assistant": answer})
 
         return answer
