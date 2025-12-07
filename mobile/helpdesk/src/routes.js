@@ -15,7 +15,6 @@ export default function Routes() {
       {logged ? (
         <>
           <Stack.Screen name="Chatbot" component={Chatbot} />
-          <Stack.Screen name="Cadastro" component={Cadastro} />
         </>
       ) : (
         <>

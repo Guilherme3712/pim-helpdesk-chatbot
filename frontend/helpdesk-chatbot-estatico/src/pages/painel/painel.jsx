@@ -333,7 +333,7 @@ export default function Painel() {
     <div className="container-fluid" style={{ minHeight: "100vh", backgroundColor: "#f4f7fa" }}>
       <div className="row g-0 min-vh-100">
         {/* SIDEBAR -> empilha no mobile (col-12) e fica como coluna no desktop (col-md-3) */}
-        <aside className="col-md-3 col-xl-2 d-none d-md-flex flex-column p-4" style={{ backgroundColor: "#fff", boxShadow: "2px 0 5px rgba(0,0,0,.02)" }}>
+        <aside className="col-12 col-md-3 col-xl-2 d-flex flex-column p-4" style={{ backgroundColor: "#fff", boxShadow: "2px 0 5px rgba(0,0,0,.02)", borderRadius:"10px" }}>
           <div className="d-flex align-items-center mb-4">
             <span className="me-2" style={{ fontSize: "1.5rem", color: "#3f67f5" }}>
               <i className="bi bi-person-circle"></i>

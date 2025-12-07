@@ -94,8 +94,13 @@ useEffect(() => {
       }
       setStatus('Nenhum chamado');
       setMessages([{ sender: 'ia', text: 'Olá! 👋 Descreva seu problema para que eu possa ajudar.' }]);
-    } catch (err) {
-      setMessages((m) => [...m, { sender: 'ia', text: `Erro ao verificar chamados: ${String(err?.response?.data || err?.message || err)}` }]);
+    } catch (e) {
+      const msg =
+        e.response?.data?.detail ||
+        e.response?.data?.message ||
+        e.message ||
+        'Erro interno!.';
+      // setMessages((m) => [...m, { sender: 'ia', text: `Erro ao verificar chamados: ${String(msg)}` }]);
       setStatus('Nenhum chamado');
     } finally {
       setLoading(false);
@@ -116,8 +121,13 @@ useEffect(() => {
       } else {
         setMessages([{ sender: 'ia', text: 'Iniciando atendimento...' }]);
       }
-    } catch (err) {
-      setMessages((m) => [...m, { sender: 'ia', text: `Erro ao carregar histórico: ${String(err?.response?.data || err?.message || err)}` }]);
+    } catch (e) {
+      const msg =
+        e.response?.data?.detail ||
+        e.response?.data?.message ||
+        e.message ||
+        'Erro interno!.';
+      setMessages((m) => [...m, { sender: 'ia', text: `Erro ao carregar histórico: ${String(msg)}` }]);
     } finally {
       setBusy(false);
     }
@@ -149,8 +159,13 @@ useEffect(() => {
       }
       const resposta = data.mensagem_ia || data.mensagem || 'Resposta vazia do servidor.';
       setMessages((m) => [...m, { sender: 'ia', text: resposta }]);
-    } catch (err) {
-      setMessages((m) => [...m, { sender: 'ia', text: `Erro ao enviar/receber: ${String(err?.response?.data || err?.message || err)}` }]);
+    } catch (e) {
+      const msg =
+        e.response?.data?.detail ||
+        e.response?.data?.message ||
+        e.message ||
+        'Erro interno!.';
+      setMessages((m) => [...m, { sender: 'ia', text: `Erro ao enviar/receber: ${String(msg)}` }]);
     } finally {
       setBusy(false);
     }

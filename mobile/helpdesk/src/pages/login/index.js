@@ -72,14 +72,14 @@ export default function Login() {
 
       await AsyncStorage.setItem('userEmail', email.trim().toLowerCase());
       setLogged(true);
+      nav.navigate('Chatbot')
     } catch (err) {
-      const rawError =
-        err.response?.data ||
+      const msg =
+        err.response?.data?.detail ||
         err.response?.data?.message ||
         err.message ||
-        'Erro inesperado ao fazer login.';
-
-      setMsg(String(rawError));
+        'Erro ao fazer login. Tente novamente.';
+      setMsg(String(msg));
     } finally {
       setLoading(false);
     }
